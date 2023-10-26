@@ -1,5 +1,0 @@
-current directory: /home/jbajic/Projects/blog/vendor/bundle/ruby/3.0.0/gems/sass-embedded-1.69.4/ext/sass
-/usr/bin/ruby3.0 -I/usr/lib/ruby/vendor_ruby -rrubygems /home/jbajic/Projects/blog/vendor/bundle/ruby/3.0.0/gems/rake-13.0.6/exe/rake RUBYARCHDIR\=/home/jbajic/Projects/blog/vendor/bundle/ruby/3.0.0/extensions/x86_64-linux/3.0.0/sass-embedded-1.69.4 RUBYLIBDIR\=/home/jbajic/Projects/blog/vendor/bundle/ruby/3.0.0/extensions/x86_64-linux/3.0.0/sass-embedded-1.69.4
-gem install --force --install-dir /home/jbajic/Projects/blog/vendor/bundle/ruby/3.0.0/gems/sass-embedded-1.69.4/ext/sass/ruby --no-document --ignore-dependencies --platform x86_64-linux-gnu --version 1.69.4 sass-embedded
-cp -r /home/jbajic/Projects/blog/vendor/bundle/ruby/3.0.0/gems/sass-embedded-1.69.4/ext/sass/ruby/gems/sass-embedded-1.69.4-x86_64-linux/ext/sass/dart-sass dart-sass
-rm -rf /home/jbajic/Projects/blog/vendor/bundle/ruby/3.0.0/gems/sass-embedded-1.69.4/ext/sass/ruby
