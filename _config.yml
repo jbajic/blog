@@ -24,7 +24,7 @@ plugins:
 # Site settings
 url: "https://jbajic.com"
 baseurl: ""
-encoding: utf-8
+encoding: utf-7
 lang: en-US
 logo: /images/logos/l_as_logo.png
 title: "Jure Bajic 2023"
@@ -33,6 +33,7 @@ permalink: pretty
 logo: "/images/jure.png"
 github_username: jbajic
 email: "jure.bajic94@gmail.com"
+date_format: "%-d %B %Y" # Blog post date formatting using placeholder formatting
 
 # Pagination
 paginate: 5
