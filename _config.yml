@@ -20,9 +20,9 @@ footer-links:
   email: jure.bajic94@gmail.com
   facebook:
   flickr:
-  github: https://github.com/jbajic
+  github: jbajic
   instagram:
-  linkedin: https://www.linkedin.com/in/jure-baji%C4%87-b1a60410b/
+  linkedin: jure-baji%C4%87-b1a60410b
   pinterest:
   rss: # just type anything here for a working RSS icon
   twitter:
@@ -40,7 +40,8 @@ google_analytics:
 
 # Your website URL (e.g. http://barryclark.github.io or http://www.barryclark.co)
 # Used for Sitemap.xml and your RSS feed
-url: https://jbajic.com
+  url: https://jbajic.github.io
+#url: https://jbajic.com
 
 # If you're hosting your site at a Project repository on GitHub pages
 # (http://yourusername.github.io/repository-name)
