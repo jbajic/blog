@@ -38,10 +38,10 @@ Checkout more about this on [Postgres documentation](https://www.postgresql.org/
 
 |   | Dirty Read | Nonrepeatable Read | Phantom Read | Serialization Anomaly |
 | --- | --- | --- | --- | --- |
-| Read Uncommited | Possible | Possible | Possible | Possible | 
-| Read Committed | Not Possible | Possible | Possible | Possible | 
-| Repetable Read | Not Possible | Not possible | Possible | Possible | 
-| Serializable | Not Possible | Not Possbile | Not Possible |  Not Possible | 
+| **Read Uncommited** | Possible | Possible | Possible | Possible | 
+| **Read Committed** | Not Possible | Possible | Possible | Possible | 
+| **Repetable Read** | Not Possible | Not possible | Possible | Possible | 
+| **Serializable** | Not Possible | Not Possbile | Not Possible |  Not Possible | 
 
 ## Anomalies
 Lets first see how these anomalies look like and how they affect database users. All the conflicting
