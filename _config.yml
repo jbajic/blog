@@ -6,6 +6,7 @@ exclude:
 - README.md
 - Gemfile
 - Gemfile.lock
+- .jekyll-cache
 
 # Set plugins
 plugins:
@@ -21,18 +22,28 @@ plugins:
 - jekyll-remote-theme
 
 # Site settings
-url: 'https://jbajic.com'
-baseurl: ''
-title: 'My ramblings and insights'
-description: 'This is my website where I write about stuff I am interested'
+url: "https://jbajic.com"
+baseurl: ""
+encoding: utf-8
+lang: en-US
+logo: /images/logos/l_as_logo.png
+title: "Jure Bajic 2023"
+description: "This is my website where I write about stuff I am interested"
 permalink: pretty
-logo: "https://gravatar.com/userimage/101788454/648a12114a6a1b1b4c0efa86cb88964c.jpeg?size=256"
+logo: "/images/jure.png"
 github_username: jbajic
 email: "jure.bajic94@gmail.com"
 
 # Pagination
 paginate: 5
 paginate_path: blog/page:num
+author: Jure Bajic
+social:
+  name: Jure Bajic
+  links:
+  - https://github.com/jbajic
+  - https://www.linkedin.com/in/jure-baji%C4%87-b1a60410b/
+
 
 # Header nav
 navigation_header:
@@ -51,10 +62,10 @@ navigation_footer:
 # Collections
 collections:
   posts:
-    title: Posts
+    title: ""
     output: true
     description: ""
-    feature_image: "https://picsum.photos/2560/600?image=866"
+    feature_image: "/images/blog.png"
 
 # Collection settings
 defaults:
@@ -70,3 +81,9 @@ defaults:
       type: "pages"
     values:
       layout: page # Set the default layout for pages
+
+social_links: # Appears in sidebar. Set the urls then uncomment and comment out as desired
+  LinkedIn: https://www.linkedin.com/in/jure-baji%C4%87-b1a60410b/
+  GitHub: https://github.com/jbajic
+  link: https://jbajic.com
+

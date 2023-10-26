@@ -1,12 +1,13 @@
 ---
-title: Welcome to my blogpost!
-feature_image: "https://picsum.photos/1300/400?image=989"
+title: Hi!
+feature_image: "images/welcome.png"
 ---
 
-Hello, welcome to my site, nothing much to see here except
-posts that I publish from time to time.
+I am Jure Bajic if you are interested learning more about me check out this [page](about_me).
 
-I will talk mostly about technical areas concerning database systems,
-C++, Rust or Python and other stuff.
+## What you can expect in my blog?
+I am interested in database systems and home automation and exploring new areas. 
+I will write here about what I have learned and found interesting and my thoughts
+and insights about various topics.
 
-Check out my posts [here](blog/).
+
