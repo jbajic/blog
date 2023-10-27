@@ -7,7 +7,7 @@ categories:
 ---
 
 **Transaction** is an abstraction used to emulate atomic execution of set of commands, and how well it
-emulates that depends isolation level. And since database systems support concurrent execution 
+emulates depends on isolation level. Since database systems support concurrent execution 
 of multiple transactions, transaction levels serve as a way to isolate execution of one transaction 
 from another in a specific way.
 
@@ -16,7 +16,7 @@ The issue that transaction levels are addressing is how *strict* we want to defi
 execution. The most correct execution would be serial execution of every transaction in the 
 order in which they arrive. And to do that most easily would be just to execute transactions
 in a single thread and viola. The obvious downside of that is that we are not utilizing the 
-multicore architecture and possibility of parallel execution.
+multicore architecture and possibility of parallel execution and also that we are waiting on IO.
 
 It becomes intuitive to think that the more the stricter the isolation level the more expensive
 execution becomes in the terms of:
@@ -63,7 +63,7 @@ Imagine we have transactions T1 and T2 like this and the starting value of `A` i
 | 4 | | COMMIT | A = 1000, A<sub>T2</sub> = 2000 |
 | 5 | COMMIT | | A = 2000 |
 
-This is not possible in neither of isolation levels, since this is the most basic of write write 
+This is not possible in either of isolation levels, since this is the most basic of write write 
 conflicts that database should guard against.
 
 ### Dirty read
