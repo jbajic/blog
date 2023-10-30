@@ -1,7 +1,7 @@
 ---
-title: Testing GitHub workflow
 layout: post
-categories: Automation
+title: Testing GitHub workflow 
+categories: [automation]
 ---
 
 If you want to test workflows on separate branch before merging on master make sure
@@ -9,7 +9,7 @@ to install Github CLI tool `gh`. And it is important to put the `workflow_dispat
 as a way of triggering the workflow on Github, so the job trigger should look something
 like this:
 
-```bash
+```yaml
 name: To Test
 
 on:

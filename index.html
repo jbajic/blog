@@ -3,32 +3,26 @@ layout: default
 ---
 
 <div class="posts">
-  {% for post in site.posts %}
-    <article class="post">
+  {% for post in paginator.posts %}
+  <article class="post">
 
-      <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
+    <h1><a href="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</a></h1>
 
-      <div class="entry">
-        {{ post.content | markdownify | strip_html | truncatewords: 50 }}
-      </div>
+    <div class="entry">
+      {% if post.content contains '<!--more-->' %}
 
-      <div class="post-categories">
-      {% if post %}
-        {% assign categories = post.categories %}
+      {{ post.excerpt }}
+
       {% else %}
-        {% assign categories = page.categories %}
-      {% endif %}
-      {% for category in categories %}
-        <a href="{{ site.baseurl }}/categories/#{{ category|slugize }}">{{category}}</a>
-        {% unless forloop.last %}&nbsp;{% endunless %}
-      {% endfor %}
-      </div>
- 
-      <div class="date">
-        Written on {{ post.date | date: "%B %e, %Y" }}
-      </div>
 
-      <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read More</a>
-    </article>
+      {{ post.excerpt | markdownify | strip_html | truncate: 160 }}
+
+      {% endif %}
+    </div>
+
+    <a href="{{ site.baseurl }}{{ post.url }}" class="read-more">Read more&nbsp;&#183;{% include read-time.html content=post.content %}</a>
+  </article>
   {% endfor %}
+
+  {% include pagination.html %}
 </div>

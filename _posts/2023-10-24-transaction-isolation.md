@@ -1,9 +1,7 @@
 ---
-title: Transaction Isolation
 layout: post
-categories:
-- Database
-- Concurrency 
+title: Transaction Isolation 
+categories: [database, concurrency]
 ---
 
 **Transaction** is an abstraction used to emulate atomic execution of set of commands, and how well it

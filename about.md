@@ -1,8 +1,7 @@
 ---
 layout: page
-title: Hi I am Jure,
-permalink: /about/
-feature_image: "/images/about_me.png"
+title: Hi I am Jure, 
+permalink: /about
 ---
 
 and I am using this blogsite to share what I have learned,
