@@ -51,20 +51,7 @@ operations which define anomalies have these two things in common:
 
 In the following examples I will use transaction T1 and T2 to show the flow and how anomalies appear.
 Imagine we have transactions T1 and T2 like this and the starting value of `A` is `100`.
-
-### Lost update
-
-|  | T1 | T2 | State |
-| --- | --- | --- | --- |
-| 0 | BEGIN | | A = 100 |
-| 1 | | BEGIN | A = 100 |
-| 2 | write(A: 1000) | | A<sub>T1</sub> = 1000 |
-| 3 | | write(A: 2000) | A<sub>T1</sub> = 1000, A<sub>T2</sub> = 2000 |
-| 4 | | COMMIT | A = 1000, A<sub>T2</sub> = 2000 |
-| 5 | COMMIT | | A = 2000 |
-
-This is not possible in either of isolation levels, since this is the most basic of write write 
-conflicts that database should guard against.
+mysql
 
 ### Dirty read
 
@@ -119,11 +106,19 @@ the result for query `x < 50` has changed for T1 by T2, and since there was no d
 the transaction did not truly run in a isolation, since the data that T1 saw changed before T1 could
 commit.
 
-## Isolation levels
-Isolation level are best defined by the anomalies they allow. SQL standard defines the levels shown
-in the table above, but with various databases existing there are other isolation levels out there, like:
-snapshot isolation.
+## Is that all?
+Well as long as the SQL standard is concerned it is, but as soon as concrete database is mentioned there might
+be more isolation levels, like **Snapshot isolation** or **Read-Only**. What is that about?
+
+Well the issue with SQL standard levels is that they are not really well defined since they are defined wit
+anomalies paper
 
 ## Conclusion
 Understanding anomalies ensures we understand the isolation level database is operating under,
-and that makes application developer life easier.
+and that makes application developer life easier, but that is only true on the database we are using.
+
+# References
+- Database Internals, Alex Petrov
+- Database System Concepts 7th edition, Avi Silberschatz, Henry F. Korth, S. Sudarshan 
+- A Critique of ANSI SQL Isolation Levels, Hal Berenson, Phil Bernstein, Jim Gray, Jim Melton, Elizabeth O’Neil, Patrick O'Neil
+
