@@ -2,6 +2,8 @@
 <html>
   <head>
     <title>{% if page.title %}{{ page.title }} – {% endif %}{{ site.name }} – {{ site.description }}</title>
+    <!-- I made the logo myself :) -->
+    <link rel="shortcut icon" type="image/x-icon" href="/images/logos/l_as_logo.png" />
 
     {% include meta.html %}
 
@@ -12,6 +14,7 @@
     <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/style.css" />
     <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/github.css" />
     <link rel="alternate" type="application/rss+xml" title="{{ site.name }} - {{ site.description }}" href="{{ site.baseurl }}/feed.xml" />
+    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/css/syntax.css" />
 
     <!-- Created with Jekyll Now - http://github.com/barryclark/jekyll-now -->
   </head>
