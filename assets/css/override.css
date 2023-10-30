@@ -1,0 +1,55 @@
+/*:root {*/
+  /*--gruvbox-bg: #282828;*/
+  /*--gruvbox-fg: #ebdbb2;*/
+  /*--gruvbox-red: #cc241d;*/
+  /*--gruvbox-green: #98971a;*/
+  /*--gruvbox-yellow: #d79921;*/
+  /*--gruvbox-blue: #458588;*/
+  /*--gruvbox-purple: #b16286;*/
+  /*--gruvbox-aqua: #689d6a;*/
+  /*--gruvbox-gray: #a89984;*/
+/*}*/
+
+/*pre, code {*/
+  /*background-color: var(--gruvbox-bg);*/
+  /*color: var(--gruvbox-fg);*/
+  /*padding: 10px;*/
+  /*border-radius: 5px;*/
+  /*font-family: 'Courier New', monospace;*/
+/*}*/
+
+/*[> Syntax Highlighting <]*/
+/*pre code {*/
+  /*display: block;*/
+  /*font-size: 14px;*/
+  /*overflow-x: auto;*/
+/*}*/
+
+/*[> Colors for syntax highlighting <]*/
+/*pre code span {*/
+  /*color: var(--gruvbox-fg);*/
+/*}*/
+
+/*pre code .comment {*/
+  /*color: var(--gruvbox-gray);*/
+/*}*/
+
+/*pre code .keyword {*/
+  /*color: var(--gruvbox-purple);*/
+/*}*/
+
+/*pre code .string {*/
+  /*color: var(--gruvbox-aqua);*/
+/*}*/
+
+/*pre code .number {*/
+  /*color: var(--gruvbox-yellow);*/
+/*}*/
+
+/*pre code .builtin {*/
+  /*color: var(--gruvbox-green);*/
+/*}*/
+
+/*pre code .operator {*/
+  /*color: var(--gruvbox-red);*/
+/*}*/

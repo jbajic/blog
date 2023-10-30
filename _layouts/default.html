@@ -36,6 +36,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" media="print" onload="this.media='all'"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css" integrity="sha384-GvrOXuhMATgEsSwCs4smul74iXGOixntILdUW9XmUC6+HX0sLNAK3q71HotJqlAn" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/ress/dist/ress.min.css"/>
+
+    <link rel="stylesheet" type="text/css" href="{{ site.baseurl }}/assets/css/override.css"/>
   </head>
 
   <body>
@@ -123,10 +125,20 @@
         window.addEventListener('load', addDarkmodeWidget);
       }
       const options = {
-        label: '🌓',
-      }
-      const darkmode = new Darkmode(options);
-            darkmode.showWidget();
+        bottom: '20px', // default: '32px'
+        right: '20px', // default: '32px'
+        left: 'unset', // default: 'unset'
+        time: '0.5s', // default: '0.3s'
+        mixColor: '#fff', // default: '#fff'
+        backgroundColor: '#fff',  // default: '#fff'
+        buttonColorDark: '#100f2c',  // default: '#100f2c'
+        buttonColorLight: '#fff', // default: '#fff'
+        saveInCookies: false, // default: true,
+        label: '🌓', // default: ''
+        autoMatchOsTheme: true // default: true
+      }     
+    const darkmode = new Darkmode(options);
+      darkmode.showWidget();
     </script>
 
   </body>

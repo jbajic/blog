@@ -267,14 +267,27 @@ blockquote {
   }
 }
 
+/* Gruvbox Theme Styles */
+:root {
+  --gruvbox-bg: #282828;
+  --gruvbox-fg: #ebdbb2;
+  --gruvbox-red: #cc241d;
+  --gruvbox-green: #98971a;
+  --gruvbox-yellow: #d79921;
+  --gruvbox-blue: #458588;
+  --gruvbox-purple: #b16286;
+  --gruvbox-aqua: #689d6a;
+  --gruvbox-gray: #a89984;
+}
+
 pre,
 code {
   font-family: $code-font-family !important;
   font-size: 15px !important;
-  color: #586e75;
+  color: var(--gruvbox-fg);
   border: 01px solid #dddddd;
   border-radius: 03px;
-  background-color: #fdf6e3;
+  background-color: var(--gruvbox-bg);
 }
 
 code {
@@ -295,11 +308,11 @@ pre {
 .highlight {
   isolation: isolate;
   border-radius: 03px;
-  background: #fdf6e3;
+  background:  var(--gruvbox-bg);
   @extend %vertical-rhythm;
 
   .highlighter-rouge & {
-    background: #fdf6e3;
+    background: var(--gruvbox-bg); 
   }
 }
 
