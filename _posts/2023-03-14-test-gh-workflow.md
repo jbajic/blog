@@ -21,3 +21,4 @@ on:
 and then just execute: `gh workflow run -r <branch_name> <workflow_file>` and done.
 Unfortunately it is not possible to run workflows from other branches via GitHub 
 UI, but only using `gh` tool.
+
