@@ -12,15 +12,17 @@ from another in a specific way.
 ## Transaction execution
 The issue that transaction levels are addressing is how *strict* we want to define transaction
 execution. The most correct execution would be serial execution of every transaction in the 
-order in which they arrive. And to do that most easily would be just to execute transactions
+serially in the order in which they arrive. Easiest way to do is to just execute transactions
 in a single thread and viola. The obvious downside of that is that we are not utilizing the 
 multicore architecture and possibility of parallel execution and also that we are waiting on IO.
 
 It becomes intuitive to think that the more the stricter the isolation level the more expensive
 execution becomes in the terms of:
  - **Transaction success**: more stricter control more transactions will get aborted,
- - **Slower execution**: in order to do all the check or hold all the locks, the systems
-    will inevitably be slower
+ - **Slower execution**: in order to do all the checks or to hold the locks, the system
+    will inevitably be slower.
+
+But also lower the isolation level used more anomalies are possible.
 
 ## Isolation levels 
 There are different levels of isolation and they are defined by the anomalies that can
@@ -34,12 +36,12 @@ how the isolation is implemented using MVCC(multi version cuncurrency control). 
 the Read Uncommitted level is used, you still won't be able to read uncommitted changes.
 Checkout more about this on [Postgres documentation](https://www.postgresql.org/docs/current/transaction-iso.html).
 
-|   | Dirty Read | Nonrepeatable Read | Phantom Read | Serialization Anomaly |
-| --- | --- | --- | --- | --- |
-| **Read Uncommited** | Possible | Possible | Possible | Possible | 
-| **Read Committed** | Not Possible | Possible | Possible | Possible | 
-| **Repetable Read** | Not Possible | Not possible | Possible | Possible | 
-| **Serializable** | Not Possible | Not Possbile | Not Possible |  Not Possible | 
+|   | Dirty Read | Nonrepeatable Read | Phantom Read | 
+| --- | --- | --- | --- |
+| **Read Uncommited** | Possible | Possible | Possible |
+| **Read Committed** | Not Possible | Possible | Possible |
+| **Repetable Read** | Not Possible | Not possible | Possible |
+| **Serializable** | Not Possible | Not Possbile | Not Possible |
 
 ## Anomalies
 Lets first see how these anomalies look like and how they affect database users. All the conflicting
@@ -49,7 +51,6 @@ operations which define anomalies have these two things in common:
 
 In the following examples I will use transaction T1 and T2 to show the flow and how anomalies appear.
 Imagine we have transactions T1 and T2 like this and the starting value of `A` is `100`.
-mysql
 
 ### Dirty read
 
@@ -85,7 +86,8 @@ level according to the SQL standard.
 
 In this scenario we are reading only committed values but in the scope of a single transaction
 the value `A` got changed from `100` to `50`, without T1 transaction doing anything. This does not
-cause issues with data integrity by itself but it makes transaction not run in full isolation.
+cause issues with data integrity by itself but it makes transaction not run in full isolation. This
+anomaly is sometimes referred as **Fuzzy Read**.
 
 ### Phantom read
 
@@ -104,12 +106,62 @@ the result for query `x < 50` has changed for T1 by T2, and since there was no d
 the transaction did not truly run in a isolation, since the data that T1 saw changed before T1 could
 commit.
 
-## Is that all?
-Well as long as the SQL standard is concerned it is, but as soon as concrete database is mentioned there might
-be more isolation levels, like **Snapshot isolation** or **Read-Only**. What is that about?
+## Issues with isolation levels & anomalies
 
-Well the issue with SQL standard levels is that they are not really well defined since they are defined wit
-anomalies paper
+Besides these anomalies defined in SQL standard, there are others like: **Dirty write**, **Lost update**, **Read skew**, **Write skew**,
+**Serialization anomaly**, but they are not defined in SQL standard and it is not really clear at which level
+are these anomalies possible. This makes the standard definition of isolation levels incomplete and allows 
+different behavior for same isolation levels which has been critiqued for a long time by a lot of people.
+
+### Dirty Write
+
+|  | T1 | T2 | State |
+| --- | --- | --- | --- |
+| 0 | BEGIN |  | A = 100 |
+| 1 | | BEGIN | A = 100 |
+| 2 | write(A: 200) | | A<sub>T1</sub> = 200, A = 100 |
+| 3 | | write(A: 300) | A<sub>T1</sub> = 200, A<sub>T2</sub> = 300, A = 100 |
+| 4 | COMMIT | | A<sub>T2</sub> = 300, A = 200 |
+| 5 | | COMMIT | A = 300 |
+
+Here T1 writes a value 200 to A, and T2 writes 300 to A, which is in a direct conflict where both
+transactions want to write on the same object.
+
+### Lost update
+
+|  | T1 | T2 | State |
+| --- | --- | --- | --- |
+| 0 | BEGIN |  | A = 100 |
+| 1 | | BEGIN | A = 100 |
+| 2 | read(A) = 100 | | A = 100 |
+| 3 | | read(A) = 100 | A = 100 |
+| 4 | write(A: 200) | | A = 100, A<sub>T1</sub> |
+| 5 | COMMIT | | A = 200 |
+| 6 | | write(A: 300) | A = 200, A<sub>T2</sub> |
+| 7 | | COMMIT | A = 300 |
+
+Lost update anomaly might seem very similar to the dirty write, but the issue here might arise from the expectation
+of the read value. First T1 reads A and then T2, and T1 updates A and commits, and transaction T2 still continues
+executing under the assumption that the value it read `A = 100` is still true, and updates A to 300. The issue here
+is that the update T1 did "disappears".
+
+### Read Skew
+
+
+Besides being incomplete the definition of levels are also ambiguous:
+- Dirty Read does not define is the anomaly present in all four possible cases when T1 and T2 aborts and commits.
+  (e.g. (T1: abort, T2: abort), (T1: commit, T2: abort), (T1: abort, T2: commit), (T1: commit, T2: commit))
+- Nonrepeatable Read and Phantom Read anomalies are defined when inserting data but not when updating and deleting.
+
+Also importantly the **Serializable** level is **NOT** a serializable transaction execution. Serializable level
+is susceptible to write and read skew anomalies.
+
+## Where is a perfect isolation?
+
+Unfortunately the standard does not define perfect isolation level, one that would lead to serializable transaction
+execution, but a lot of database vendors have abandoned standard in this regard. So what is on standard defined
+as Serializable isolation level some call **Snapshot Isolation**, and Serializable is a serializable level is
+transaction execution.
 
 ## Conclusion
 Understanding anomalies ensures we understand the isolation level database is operating under,
@@ -119,4 +171,6 @@ and that makes application developer life easier, but that is only true on the d
 - Database Internals, Alex Petrov
 - Database System Concepts 7th edition, Avi Silberschatz, Henry F. Korth, S. Sudarshan 
 - A Critique of ANSI SQL Isolation Levels, Hal Berenson, Phil Bernstein, Jim Gray, Jim Melton, Elizabeth O’Neil, Patrick O'Neil
+- Seeing is Believing: A Client-Centric Specification of Database Isolation, Natacha Crooks, Youer Pu,
+  Lorenzo Alvisi, Allen Clement
 
