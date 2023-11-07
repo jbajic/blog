@@ -71,6 +71,8 @@ uncommitted changes is that transaction that made them could easily revert them,
 event be the final changes that the transaction has made. Dirty reads are allowed in Read Uncommitted
 level according to the SQL standard.
 
+TLDR: **Dirty read** anomaly happens when one transaction reads the changes of another uncommitted transaction.
+
 ### Nonrepeatable Read
 
 |  | T1 | T2 | State |
@@ -89,16 +91,19 @@ the value `A` got changed from `100` to `50`, without T1 transaction doing anyth
 cause issues with data integrity by itself but it makes transaction not run in full isolation. This
 anomaly is sometimes referred as **Fuzzy Read**.
 
+TLDR: **Nonrepeatable read** anomaly happens when one transaction read the same object multiple times and gets
+a different value for it, without making any updates to it.
+
 ### Phantom read
 
 |  | T1 | T2 | State |
 | --- | --- | --- | --- |
 | 0 | BEGIN |  | A = 100 |
 | 1 | | BEGIN | A = 100 |
-| 2 | data := read(x < 50) = ({A: 100})| | A = 100 |
+| 2 | data := read(x > 50) = ({A: 100})| | A = 100 |
 | 3 | | write(B: 200) | A = 100, B<sub>T2</sub> = 200 |
 | 4 |  | COMMIT | A = 100, B = 200 |
-| 5 | IF data.size() == 1: write(C: 300) | | A = 100, B = 200, C<sub>T1</sub> = 300 |
+| 5 | data := read(x > 50) = ({A: 100}, {B: 200}) | | A = 100, B = 200, C<sub>T1</sub> = 300 |
 | 6 | COMMIT | | A = 100, B = 200, C = 300 |
 
 In phantom read anomaly the issue was not in the particular object, but in the change of predicate result,
@@ -106,11 +111,14 @@ the result for query `x < 50` has changed for T1 by T2, and since there was no d
 the transaction did not truly run in a isolation, since the data that T1 saw changed before T1 could
 commit.
 
+TLDR: **Phantom read** anomaly happens when one transaction predicate (select query) changes by having more
+rows when the predicate is repeated.
+
 ## Issues with isolation levels & anomalies
 
-Besides these anomalies defined in SQL standard, there are others like: **Dirty write**, **Lost update**, **Read skew**, **Write skew**,
-**Serialization anomaly**, but they are not defined in SQL standard and it is not really clear at which level
-are these anomalies possible. This makes the standard definition of isolation levels incomplete and allows 
+Besides these anomalies defined in SQL standard, there are others like: **Dirty write**, **Lost update**, **Read skew**
+and **Write skew**,but they are not defined in SQL standard and it is not really clear at which level
+these anomalies are possible. This makes the standard definition of isolation levels incomplete and allows 
 different behavior for same isolation levels which has been critiqued for a long time by a lot of people.
 
 ### Dirty Write
@@ -127,25 +135,54 @@ different behavior for same isolation levels which has been critiqued for a long
 Here T1 writes a value 200 to A, and T2 writes 300 to A, which is in a direct conflict where both
 transactions want to write on the same object.
 
+TLDR: **Dirty write** happens when two transaction are trying to update the same object.
+
 ### Lost update
 
 |  | T1 | T2 | State |
 | --- | --- | --- | --- |
 | 0 | BEGIN |  | A = 100 |
 | 1 | | BEGIN | A = 100 |
-| 2 | read(A) = 100 | | A = 100 |
-| 3 | | read(A) = 100 | A = 100 |
-| 4 | write(A: 200) | | A = 100, A<sub>T1</sub> |
-| 5 | COMMIT | | A = 200 |
-| 6 | | write(A: 300) | A = 200, A<sub>T2</sub> |
-| 7 | | COMMIT | A = 300 |
+| 4 | write(A: 150) | | A = 100, A<sub>T1</sub> = 150 |
+| 5 | COMMIT | | A = 150 |
+| 6 | | write(A: 50) | A = 150, A<sub>T2</sub> = 50 |
+| 7 | | COMMIT | A = 50 |
 
 Lost update anomaly might seem very similar to the dirty write, but the issue here might arise from the expectation
 of the read value. First T1 reads A and then T2, and T1 updates A and commits, and transaction T2 still continues
 executing under the assumption that the value it read `A = 100` is still true, and updates A to 300. The issue here
 is that the update T1 did "disappears".
 
+TLDR: **Lost update** happens when multiple transaction are reading and updating the value, but the last update wins
+and the one before gets lost. The difference between dirty read is that write of one transaction happens after
+the other commits.
+
 ### Read Skew
+
+|  | T1 | T2 | State |
+| --- | --- | --- | --- |
+| 0 | BEGIN |  | A = 100, B = 200 |
+| 1 | | BEGIN | A = 100, B = 200 |
+| 2 | a = read(A) = 100 | | A = 100 |
+| 3 | | write(A: 200) | A = 100, A<sub>T2</sub> = 200 |
+| 4 | | COMMIT | A = 200 |
+| 5 | write(A: a + 50) | | A = 200, A<sub>T1</sub> = 150 |
+| 6 | COMMIT | | A = 150 |
+
+In this anomaly T1 reads value `A` which is 100 and T2 updates `A` to 200 and commits, after that transaction
+T2 updates `A` using the inconsistent value that it read before.
+This might seem very similar to unrepetable read but in this anomaly T1 updates `A` using outdated value that it read but was changed by transaction T2.
+
+TLDR: **Read skew** is an expanded definition of phantom read, in phantom read we assumes only that insert may change the predicate
+data, but here every inconsistency on the data we have read is considered anomaly.
+
+### Write Skew
+
+|  | T1 | T2 | State |
+| --- | --- | --- | --- |
+| 0 | BEGIN |  | A = 100 |
+| 1 | | BEGIN | A = 100 |
+
 
 
 Besides being incomplete the definition of levels are also ambiguous:
