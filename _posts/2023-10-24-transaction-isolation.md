@@ -163,15 +163,16 @@ the other commits.
 | --- | --- | --- | --- |
 | 0 | BEGIN |  | A = 100, B = 200 |
 | 1 | | BEGIN | A = 100, B = 200 |
-| 2 | a = read(A) = 100 | | A = 100 |
-| 3 | | write(A: 200) | A = 100, A<sub>T2</sub> = 200 |
-| 4 | | COMMIT | A = 200 |
-| 5 | write(A: a + 50) | | A = 200, A<sub>T1</sub> = 150 |
-| 6 | COMMIT | | A = 150 |
+| 2 | a = read(A) = 100 | | A = 100, B = 200 |
+| 3 |  | write(B: 500) | A = 100, B = 200, B<sub>T2</sub> = 500 |
+| 4 |  | COMMIT | A = 100, B = 500 |
+| 5 | b = read(B) = 500 | | A = 100, B = 500 |
+| 6 | write(C: a + b) | | A = 100, B = 500, C<sub>T1</sub> = 600 |
+| 7 | COMMIT | | A = 100, B = 500, C = 600 |
 
-In this anomaly T1 reads value `A` which is 100 and T2 updates `A` to 200 and commits, after that transaction
-T2 updates `A` using the inconsistent value that it read before.
-This might seem very similar to unrepetable read but in this anomaly T1 updates `A` using outdated value that it read but was changed by transaction T2.
+In this anomaly T1 reads value `A` which is 100 and T2 updates `B` to 500 and commits, after that transaction
+T1 reads B with newly committed data. Even though the data it read is valid it is not consistent with T1 being
+executed in isolated enviroment.
 
 TLDR: **Read skew** is an expanded definition of phantom read, in phantom read we assumes only that insert may change the predicate
 data, but here every inconsistency on the data we have read is considered anomaly.
