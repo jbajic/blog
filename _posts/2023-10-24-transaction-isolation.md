@@ -214,7 +214,6 @@ execution, but a lot of database vendors have abandoned standard in this regard.
 as Serializable isolation level some call **Snapshot Isolation**, and Serializable is a serializable level is
 transaction execution.
 
-
 # References
 - Database Internals, Alex Petrov
 - Database System Concepts 7th edition, Avi Silberschatz, Henry F. Korth, S. Sudarshan 
