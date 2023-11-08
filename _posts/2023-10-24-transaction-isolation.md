@@ -114,7 +114,7 @@ commit.
 Definition: **Phantom read** anomaly happens when one transaction predicate (select query) changes by having more
 rows when the predicate is repeated.
 
-## Issues with isolation levels & anomalies
+## Additional anomalies
 
 Besides these anomalies defined in SQL standard, there are others like: **Dirty write**, **Lost update**, **Read skew**
 and **Write skew**,but they are not defined in SQL standard and it is not really clear at which level
@@ -197,7 +197,8 @@ transactions the values A and B have exchanged. But in serial execution of the t
 Definition: **Write skew** is an anomaly in which transaction execution when writing data does not result in final
 changes being executed in serial order.
 
-TODO
+## Issues with isolation levels & anomalies
+
 Besides being incomplete the definition of levels are also ambiguous:
 - Dirty Read does not define is the anomaly present in all four possible cases when T1 and T2 aborts and commits.
   (e.g. (T1: abort, T2: abort), (T1: commit, T2: abort), (T1: abort, T2: commit), (T1: commit, T2: commit))
@@ -213,9 +214,6 @@ execution, but a lot of database vendors have abandoned standard in this regard.
 as Serializable isolation level some call **Snapshot Isolation**, and Serializable is a serializable level is
 transaction execution.
 
-## Conclusion
-Understanding anomalies ensures we understand the isolation level database is operating under,
-and that makes application developer life easier, but that is only true on the database we are using.
 
 # References
 - Database Internals, Alex Petrov
