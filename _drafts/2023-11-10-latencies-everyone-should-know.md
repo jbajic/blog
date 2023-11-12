@@ -17,7 +17,7 @@ is the data from that old GitHub gist from 2012":"
 | HDD disk seek | 10 000 000 ns = 20 000 μs = 20 ms |
 | HDD sequential read | 20 000 000 ns = 150 000 μs = 150 ms |
 
-This is a picture of latencies from 2012, lets see how much the numbers have changed in eleven years and what additional
+This is a table of latencies from 2012, lets see how much the numbers have changed in eleven years and what additional
 storage devices can we add here.
 
 ## CPU caches
