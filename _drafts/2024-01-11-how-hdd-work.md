@@ -23,6 +23,14 @@ which **writes** the data down. Detecting the magnetic field in arm generates th
 current in arm and therefore reads the data. Newer HDDs have separate heads for
 reading and writing the data.
 
+A interesting question to ask is why not add multiple arms to increase HDD speed
+and add internal parallelism like SSDs have? As said in this [answer]
+(https://superuser.com/questions/1137805/why-arent-there-multiple-heads-covering-the-radius-of-a-hard-disk-platter)
+the issue is that would introduce additional complexity of calculating and moving
+the arms and would also create more heat within the HDDs, and besides that they
+would be much more expensive for consumer grade products. But looking at the
+existing HDDs there are some implementing multiple arms e.g. Seagate MACH.2
+
 ## Total latency
 
 When the HDD needs to read the data few things have to happen first:
@@ -50,7 +58,21 @@ But bandwidth of HDD can vary greatly from one manufacturer to other, but accept
 bandwidth rate for reading/writing is 30-150 MB/s. SATA cables are not a bottleneck, since SATA 3 transfer speed is around 6 Gbit/s which is 750 MB/s, more then HDD
 bandwidth.
 
+## Sequential vs Random access
+
+Let us try to test out he difference between random and sequential access to
+compare the speed and see the effect on the write/read operations. I will be using
+fio to measure different workloads on a HDD. I am using: [Western Digital
+WD10EZEX-60WN4A1 - 1TB 7.2K RPM SATA 3.5" Hard Drive HDD](https://smarthdd.com/database/WDC-WD10EZEX-60WN4A1/03.01A03/) which according to the
+specification has:
+- average seek time: 8ms,
+- rotational speed 7200 RPM, which means it needs 8.33 ms to do a full rotation.
+- maximum read speed of 210 MB/s and maximum buffered read speed of 425 MB/s
+
+I am interested if the tests with fio will match the results in specifications, so
+lets see.
+
 ## References
 - https://en.wikipedia.org/wiki/Disk_read-and-write_head#:~:text=A%20disk%20read%2Dand%2Dwrite,magnetic%20field%20into%20electric%20current
 - https://superuser.com/questions/107723/hard-drive-sectors-vs-tracks sectors in tracks
-- [#3]Database-System-Concepts-7th-Edition
+- Database System Concepts 7th Edition
