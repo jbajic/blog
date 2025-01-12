@@ -62,17 +62,22 @@ bandwidth.
 
 Let us try to test out he difference between random and sequential access to
 compare the speed and see the effect on the write/read operations. I will be using
-fio to measure different workloads on a HDD. I am using: [Western Digital
-WD10EZEX-60WN4A1 - 1TB 7.2K RPM SATA 3.5" Hard Drive HDD](https://smarthdd.com/database/WDC-WD10EZEX-60WN4A1/03.01A03/) which according to the
+[fio](https://github.com/axboe/fio) to measure different workloads on a HDD. I am using: [Western Digital
+WD10EZEX-60WN4A1](https://smarthdd.com/database/WDC-WD10EZEX-60WN4A1/03.01A03/) which according to the
 specification has:
 - average seek time: 8ms,
 - rotational speed 7200 RPM, which means it needs 8.33 ms to do a full rotation.
 - maximum read speed of 210 MB/s and maximum buffered read speed of 425 MB/s
 
-I am interested if the tests with fio will match the results in specifications, so
-lets see.
+I am interested if the tests with fio will match the
+results in specifications, so lets see. Checking my HDD block size:
+```bash
+cat /sys/block/sdc/queue/physical_block_size
+```
+I get 4096, which is the block size.
 
 ## References
 - https://en.wikipedia.org/wiki/Disk_read-and-write_head#:~:text=A%20disk%20read%2Dand%2Dwrite,magnetic%20field%20into%20electric%20current
 - https://superuser.com/questions/107723/hard-drive-sectors-vs-tracks sectors in tracks
 - Database System Concepts 7th Edition
+- https://github.com/axboe/fio
