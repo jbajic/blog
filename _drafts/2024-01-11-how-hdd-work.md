@@ -35,13 +35,22 @@ away they are.
 is called **rotational latency time**. This time can range between 4 ms and 11 ms
 per rotation.
 Full access time is the sum of seek time and rotational latency time. In summary:
+
+## Latency & bandwidth
+
+Showing how HDDs work we have already covered their latency which can be expressed
+in this formula:
 ```math
 TotalLatency = SeekTime + RotationalLatencyTime
 ```
+The latency of disk seek can greatly vary depending on if it is a sequential or
+random access. Taking a look at [Latencies every programmer should know](https://gist.github.com/jboner/2841832) it matches or expectations around 20 ms.
 
-## Sequential vs Random access
+But bandwidth of HDD can vary greatly from one manufacturer to other, but accepted
+bandwidth rate for reading/writing is 30-150 MB/s. SATA cables are not a bottleneck, since SATA 3 transfer speed is around 6 Gbit/s which is 750 MB/s, more then HDD
+bandwidth.
 
 ## References
 - https://en.wikipedia.org/wiki/Disk_read-and-write_head#:~:text=A%20disk%20read%2Dand%2Dwrite,magnetic%20field%20into%20electric%20current
 - https://superuser.com/questions/107723/hard-drive-sectors-vs-tracks sectors in tracks
-- Database-System-Concepts-7th-Edition
+- [#3]Database-System-Concepts-7th-Edition
