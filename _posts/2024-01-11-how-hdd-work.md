@@ -6,10 +6,10 @@ categories: [general, storage]
 
 ## How do Hard Disk Drives work?
 
-HDD is a non volatile storage device which stores the data in a form of a magnetic
-field. The HDD is made out of multiple magnetic (from one to five platters) **platters** and pair of arms below and above of each platter.
+An HDD is a non volatile storage device which stores the data in a form of a magnetic
+field. The HDD is made out of multiple magnetic  **platters** (from one to five) and pair of arms below and above of each platter.
 Each platter contains multiple **tracks** which is a circular path on the platter.
-And tracks contains smaller chunks called **sectors**. Data is read and written
+Tracks contains smaller chunks called **sectors**. Data is read and written
 sector by sector using the arms. Sectors usually have sizes in range from 512 B
 to 16 KB. And a single track can have [many sectors](https://superuser.com/questions/107723/hard-drive-sectors-vs-tracks)
 depending how far away is track from the center of the platter. Modern HDD mostly
@@ -18,12 +18,12 @@ the writes of sectors will happen atomically. Here is my humble hand drawn
 representation if this:
 ![HDD internal hand drawn representation](/assets/image/hdd-internal.png)
 
-Mechanism of writing and reading data is based on magnetic field of the platters. When disk arm generates current it changes the magnetic field of the platter,
-which **writes** the data down. Detecting the magnetic field in arm generates the
+The Mechanism of writing and reading data is based on magnetic field of the platters. When disk arm generates current it changes the magnetic field of the platter,
+which **writes** the data down. Detecting the magnetic field in arm generates
 current in arm and therefore reads the data. Newer HDDs have separate heads for
 reading and writing the data.
 
-A interesting question to ask is why not add multiple arms to increase HDD speed
+An interesting question to ask is why not add multiple arms to increase HDD speed
 and add internal parallelism like SSDs have? As said in this [answer]
 (https://superuser.com/questions/1137805/why-arent-there-multiple-heads-covering-the-radius-of-a-hard-disk-platter)
 the issue is that would introduce additional complexity of calculating and moving
@@ -53,7 +53,7 @@ TotalLatency = SeekTime + RotationalLatencyTime
 ```
 The latency of disk seek can greatly vary depending on if it is a sequential or
 random access. Taking a look at [Latencies every programmer should know](https://gist.github.com/jboner/2841832)
-it matches or expectations around 20 ms.
+it matches our expectations around 20 ms.
 
 But bandwidth of HDD can vary greatly from one manufacturer to other, but accepted
 bandwidth rate for reading/writing is 30-150 MB/s. SATA cables are not a bottleneck,
@@ -128,15 +128,49 @@ Run status group 0 (all jobs):
    READ: io=441519MB, aggrb=502350KB/s, minb=502350KB/s, maxb=502350KB/s, mint=900001msec, maxt=900001msec
 ```
 
-So in tests we can see that the overall read bandwidth is around 500MB/s and
-average latency is 127.16µs for a sequential workload. Out of three sets of running
+So in tests we can see that the overall read bandwidth is around 500 MB/s and
+average latency is 127.16 µs for a sequential workload. Out of three sets of running
 fio test I took the median one.
 
 ### Random workload
-The only change in the fio run configuration made is in the `rw` fieldss, and changed
-it to randread.
+The only change in the fio run configuration made is in the `rw` fields, and changed
+it to `randread`. 
 
 The results gotten from these runs are
+```
+file1: (groupid=0, jobs=1): err= 0: pid=28: Sun Apr 27 16:57:08 2025
+  read : io=995992KB, bw=1106.6KB/s, iops=276, runt=900113msec
+    slat (usec): min=4, max=22482, avg=19.27, stdev=46.42
+    clat (usec): min=164, max=1005.1K, avg=57814.74, stdev=63585.09
+     lat (usec): min=170, max=1005.1K, avg=57834.32, stdev=63585.03
+    clat percentiles (msec):
+     |  1.00th=[    6],  5.00th=[    8], 10.00th=[   10], 20.00th=[   15],
+     | 30.00th=[   20], 40.00th=[   27], 50.00th=[   36], 60.00th=[   48],
+     | 70.00th=[   65], 80.00th=[   90], 90.00th=[  135], 95.00th=[  184],
+     | 99.00th=[  306], 99.50th=[  363], 99.90th=[  494], 99.95th=[  545],
+     | 99.99th=[  717]
+    bw (KB  /s): min=  660, max= 1296, per=100.00%, avg=1107.30, stdev=75.32
+    lat (usec) : 250=0.01%, 500=0.01%, 750=0.01%, 1000=0.01%
+    lat (msec) : 2=0.01%, 4=0.15%, 10=11.51%, 20=19.29%, 50=30.83%
+    lat (msec) : 100=21.19%, 250=14.95%, 500=1.98%, 750=0.09%, 1000=0.01%
+    lat (msec) : 2000=0.01%
+  cpu          : usr=0.31%, sys=0.80%, ctx=251077, majf=0, minf=27
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=100.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.1%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued    : total=r=248998/w=0/d=0, short=r=0/w=0/d=0, drop=r=0/w=0/d=0
+     latency   : target=0, window=0, percentile=100.00%, depth=16
+
+```
+Here we see that the overall read bandwidth is around 1106.6 KB/s or 1.1066 MB/s and
+average latency is 57834.32 µs for a random workload. Which is a huge difference
+from the sequential load from before. Bandwidth is ~1000 times lower and the latency
+is ~50 times bigger compared to sequential workload.
+
+For HDD it is very important how many sequential reads we have since it can make all
+the difference. Therefore the data structures that are designed for HDD usually implement
+some sort of space locality when inserting data, so that the most relevant data is physically
+closer on disk.
 
 ## References
 - https://en.wikipedia.org/wiki/Disk_read-and-write_head#:~:text=A%20disk%20read%2Dand%2Dwrite,magnetic%20field%20into%20electric%20current
@@ -147,3 +181,4 @@ S. Sudarshan
 - https://www.seagate.com/www-content/datasheets/pdfs/ironwolf-18tb-DS1904-20-2111US-en_US.pdf
 - https://smarthdd.com/database/ST4000VN006-3CW104/SC60/
 - https://www.seagate.com/www-content/product-content/ironwolf/en-us/docs/100807039m.pdf
+
