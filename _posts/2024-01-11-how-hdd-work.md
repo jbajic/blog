@@ -8,30 +8,32 @@ categories: [general, storage]
 
 An HDD is a non volatile storage device which stores the data in a form of a magnetic
 field. The HDD is made out of multiple magnetic  **platters** (from one to five) and pair of arms below and above of each platter.
+
 Each platter contains multiple **tracks** which is a circular path on the platter.
 Tracks contains smaller chunks called **sectors**. Data is read and written
 sector by sector using the arms. Sectors usually have sizes in range from 512 B
 to 16 KB. And a single track can have [many sectors](https://superuser.com/questions/107723/hard-drive-sectors-vs-tracks)
-depending how far away is track from the center of the platter. Modern HDD mostly
+depending how far away is track from the center of the platter.
+
+Modern HDD mostly
 have 16 KB sectors. It is important mentioning that HDD devices guarantee that
 the writes of sectors will happen atomically. Here is my humble hand drawn
-representation if this:
+representation of this:
 ![HDD internal hand drawn representation](/assets/image/hdd-internal.png)
 
-The Mechanism of writing and reading data is based on magnetic field of the platters. When disk arm generates current it changes the magnetic field of the platter,
+The mechanism of writing and reading data is based on magnetic field of the platters. When disk arm generates current it changes the magnetic field of the platter,
 which **writes** the data down. Detecting the magnetic field in arm generates
 current in arm and therefore reads the data. Newer HDDs have separate heads for
 reading and writing the data.
 
 An interesting question to ask is why not add multiple arms to increase HDD speed
-and add internal parallelism like SSDs have? As said in this [answer]
-(https://superuser.com/questions/1137805/why-arent-there-multiple-heads-covering-the-radius-of-a-hard-disk-platter)
+and add internal parallelism like SSDs have? As said in this [answer](https://superuser.com/questions/1137805/why-arent-there-multiple-heads-covering-the-radius-of-a-hard-disk-platter)
 the issue is that would introduce additional complexity of calculating and moving
 the arms and would also create more heat within the HDDs, and besides that they
 would be much more expensive for consumer grade products. But looking at the
 existing HDDs there are some implementing multiple arms e.g. Seagate MACH.2
 
-## Total latency
+## Latency 
 
 When the HDD needs to read the data few things have to happen first:
 1. The OS provides the exact block/sector that needs to be read from the disk.
@@ -44,16 +46,16 @@ is called **rotational latency time**. This time can range between 4 ms and 11 m
 per rotation.
 Full access time is the sum of seek time and rotational latency time. In summary:
 
-## Latency & bandwidth
+It is exactly this process that makes the **sequential** reads very fast, but **random** ones
+slow. Since for the sequential the seek time and the rotational latency time are minimized.
 
-Showing how HDDs work we have already covered their latency which can be expressed
-in this formula:
+We can express the total latency of a disk read to be:
 ```math
 TotalLatency = SeekTime + RotationalLatencyTime
 ```
-The latency of disk seek can greatly vary depending on if it is a sequential or
-random access. Taking a look at [Latencies every programmer should know](https://gist.github.com/jboner/2841832)
-it matches our expectations around 20 ms.
+which for our estimation can be in range of 5 - 31 ms.
+
+## Bandwidth
 
 But bandwidth of HDD can vary greatly from one manufacturer to other, but accepted
 bandwidth rate for reading/writing is 30-150 MB/s. SATA cables are not a bottleneck,
@@ -67,8 +69,8 @@ compare the speed and see the effect on the write/read operations. I will be usi
 [fio](https://github.com/axboe/fio) to measure different workloads on a HDD. I
 am using: [Seagate ST4000VN006-3CW104](https://smarthdd.com/database/ST4000VN006-3CW104/SC60/) which according to the specification has:
 - **rotational speed** 5400 RPM, which means it needs 11.11 ms to do a full rotation,
-- maximum **read speed*** of 252 MB/s and maximum buffered read speed of 492 MB/s,
-- average **seek time** 12ms.
+- maximum **read speed** of 252 MB/s and maximum buffered read speed of 492 MB/s,
+- average **seek time** 12 ms.
 
 I am interested if the tests with fio will match the
 results in specifications, so lets see. Checking my HDD block size:
@@ -159,6 +161,10 @@ For HDD it is very important how many sequential reads we have since it can make
 the difference. Therefore the data structures that are designed for HDD usually implement
 some sort of space locality when inserting data, so that the most relevant data is physically
 closer on disk.
+
+## Analsys
+
+
 
 ## References
 - https://en.wikipedia.org/wiki/Disk_read-and-write_head#:~:text=A%20disk%20read%2Dand%2Dwrite,magnetic%20field%20into%20electric%20current
