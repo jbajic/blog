@@ -118,14 +118,6 @@ file1: (groupid=0, jobs=1): err= 0: pid=20: Sun Apr  6 18:42:45 2025
     lat (usec) : 500=0.37%, 750=0.06%, 1000=0.01%
     lat (msec) : 2=0.03%, 4=0.01%, 10=0.01%, 20=0.01%, 50=0.01%
   cpu          : usr=8.37%, sys=89.98%, ctx=45150, majf=0, minf=25
-  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=100.0%, 32=0.0%, >=64=0.0%
-     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
-     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.1%, 32=0.0%, 64=0.0%, >=64=0.0%
-     issued    : total=r=113028898/w=0/d=0, short=r=0/w=0/d=0, drop=r=0/w=0/d=0
-     latency   : target=0, window=0, percentile=100.00%, depth=16
-
-Run status group 0 (all jobs):
-   READ: io=441519MB, aggrb=502350KB/s, minb=502350KB/s, maxb=502350KB/s, mint=900001msec, maxt=900001msec
 ```
 
 So in tests we can see that the overall read bandwidth is around 500 MB/s and
@@ -138,34 +130,30 @@ it to `randread`.
 
 The results gotten from these runs are
 ```
-file1: (groupid=0, jobs=1): err= 0: pid=28: Sun Apr 27 16:57:08 2025
-  read : io=995992KB, bw=1106.6KB/s, iops=276, runt=900113msec
-    slat (usec): min=4, max=22482, avg=19.27, stdev=46.42
-    clat (usec): min=164, max=1005.1K, avg=57814.74, stdev=63585.09
-     lat (usec): min=170, max=1005.1K, avg=57834.32, stdev=63585.03
+Starting 1 process
+file1: Laying out IO file(s) (1 file(s) / 10240MB)
+Jobs: 1 (f=1): [r(1)] [100.0% done] [1162KB/0KB/0KB /s] [290/0/0 iops] [eta 00m:00s]
+file1: (groupid=0, jobs=1): err= 0: pid=26: Sun Apr 27 17:24:45 2025
+  read : io=998928KB, bw=1109.9KB/s, iops=277, runt=900076msec
+    slat (usec): min=4, max=3098, avg=19.69, stdev=14.00
+    clat (usec): min=200, max=915661, avg=57641.95, stdev=63896.23
+     lat (usec): min=208, max=915693, avg=57661.96, stdev=63896.14
     clat percentiles (msec):
-     |  1.00th=[    6],  5.00th=[    8], 10.00th=[   10], 20.00th=[   15],
+     |  1.00th=[    6],  5.00th=[    8], 10.00th=[   10], 20.00th=[   14],
      | 30.00th=[   20], 40.00th=[   27], 50.00th=[   36], 60.00th=[   48],
-     | 70.00th=[   65], 80.00th=[   90], 90.00th=[  135], 95.00th=[  184],
-     | 99.00th=[  306], 99.50th=[  363], 99.90th=[  494], 99.95th=[  545],
-     | 99.99th=[  717]
-    bw (KB  /s): min=  660, max= 1296, per=100.00%, avg=1107.30, stdev=75.32
+     | 70.00th=[   64], 80.00th=[   89], 90.00th=[  135], 95.00th=[  184],
+     | 99.00th=[  310], 99.50th=[  367], 99.90th=[  502], 99.95th=[  562],
+     | 99.99th=[  676]
+    bw (KB  /s): min=  656, max= 1301, per=100.00%, avg=1110.51, stdev=74.46
     lat (usec) : 250=0.01%, 500=0.01%, 750=0.01%, 1000=0.01%
-    lat (msec) : 2=0.01%, 4=0.15%, 10=11.51%, 20=19.29%, 50=30.83%
-    lat (msec) : 100=21.19%, 250=14.95%, 500=1.98%, 750=0.09%, 1000=0.01%
-    lat (msec) : 2000=0.01%
-  cpu          : usr=0.31%, sys=0.80%, ctx=251077, majf=0, minf=27
-  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=100.0%, 32=0.0%, >=64=0.0%
-     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
-     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.1%, 32=0.0%, 64=0.0%, >=64=0.0%
-     issued    : total=r=248998/w=0/d=0, short=r=0/w=0/d=0, drop=r=0/w=0/d=0
-     latency   : target=0, window=0, percentile=100.00%, depth=16
-
+    lat (msec) : 2=0.01%, 4=0.15%, 10=11.73%, 20=19.24%, 50=30.84%
+    lat (msec) : 100=21.17%, 250=14.75%, 500=1.98%, 750=0.10%, 1000=0.01%
+  cpu          : usr=0.31%, sys=0.83%, ctx=251990, majf=0, minf=26
 ```
-Here we see that the overall read bandwidth is around 1106.6 KB/s or 1.1066 MB/s and
-average latency is 57834.32 µs for a random workload. Which is a huge difference
-from the sequential load from before. Bandwidth is ~1000 times lower and the latency
-is ~50 times bigger compared to sequential workload.
+Here we see that the overall read bandwidth is around 1109.9 KB/s or 1.1009 MB/s and
+average latency is 57661.96 µs for a random workload. Which is a huge difference
+from the sequential load from before. Bandwidth is around 1000 times lower and the latency
+is around 50 times bigger compared to sequential workload.
 
 For HDD it is very important how many sequential reads we have since it can make all
 the difference. Therefore the data structures that are designed for HDD usually implement
