@@ -82,6 +82,7 @@ $ cat /sys/block/sdc/queue/physical_block_size
 we can see that the block size of my HDD is 4KB.
 
 ### Sequential workload
+
 Now lets set up a fio job using this configuration for sequential read:
 ```toml
 [global]
@@ -127,6 +128,7 @@ average latency is 127.16 µs for a sequential workload. Out of three sets of ru
 fio test I took the median one.
 
 ### Random workload
+
 The only change in the fio run configuration made is in the `rw` fields, and changed
 it to `randread`. 
 
@@ -154,25 +156,40 @@ file1: (groupid=0, jobs=1): err= 0: pid=26: Sun Apr 27 17:24:45 2025
 ```
 Here we see that the overall read bandwidth is around 1109.9 KB/s or 1.1009 MB/s and
 average latency is 57661.96 µs for a random workload. Which is a huge difference
-from the sequential load from before. Bandwidth is around 1000 times lower and the latency
-is around 50 times bigger compared to sequential workload.
+from the sequential load from before. Bandwidth is around 500 times lower and the latency
+is around 450 times bigger compared to sequential workload.
 
 For HDD it is very important how many sequential reads we have since it can make all
 the difference. Therefore the data structures that are designed for HDD usually implement
 some sort of space locality when inserting data, so that the most relevant data is physically
 closer on disk.
 
-## Analsys
+## Analysis 
 
+But lets try to see how does theory matches the measured data here:
+
+| Measured | Sequential | Random |
+| -------- | ------- |
+| Latency [µs]  | 127.16 | 57661.96  |
+| Bandwidth [MB/s] | 500 | 1.109 |
+| IOPS  | 125587 | 277 |
+
+In theory we should not have experienced a bigger latency then 31 ms, and here we measure almost
+57 ms, why is that? And plus that we see much lower IOPS executed in random workload.
+
+The latency we measure is from the point that user issues IO operation,
+the request is not immediately executed by HDD but it is queued since we are probably waiting on 
+the previous IO operation to be executed and so on. We could have limited this in fio test by
+setting `iodepth` to 1.
 
 
 ## References
-- https://en.wikipedia.org/wiki/Disk_read-and-write_head#:~:text=A%20disk%20read%2Dand%2Dwrite,magnetic%20field%20into%20electric%20current
-- https://superuser.com/questions/107723/hard-drive-sectors-vs-tracks sectors in tracks
+- <https://en.wikipedia.org/wiki/Disk_read-and-write_head>
+- <https://superuser.com/questions/107723/hard-drive-sectors-vs-tracks> 
 - Database System Concepts 7th Edition, Abraham Silberschatz, Henry F. Korth,
 S. Sudarshan
-- https://github.com/axboe/fio
-- https://www.seagate.com/www-content/datasheets/pdfs/ironwolf-18tb-DS1904-20-2111US-en_US.pdf
-- https://smarthdd.com/database/ST4000VN006-3CW104/SC60/
-- https://www.seagate.com/www-content/product-content/ironwolf/en-us/docs/100807039m.pdf
+- <https://github.com/axboe/fio>
+- <https://www.seagate.com/www-content/datasheets/pdfs/ironwolf-18tb-DS1904-20-2111US-en_US.pdf>
+- <https://smarthdd.com/database/ST4000VN006-3CW104/SC60/>
+- <https://www.seagate.com/www-content/product-content/ironwolf/en-us/docs/100807039m.pdf>
 
