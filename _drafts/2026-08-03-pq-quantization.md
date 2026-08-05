@@ -16,7 +16,7 @@ If we were to use `PQ16x8`, where `M = 16` and, `kBits = 8` on vectors of dimens
 split the into 16 subspaces `kSub = D / M = 16`. Every subspace has `2^kBits = 2^8 = 256` centroids, and centroid is
 represented by kSub dimensional vectors of type `float32`.
 
-### PQ Codebook
+## PQ Codebook
 All of that information about centroids from every subspace in stored in PQ codebook, and using that
 information we can visualize how does the codebook looks like and calculate how much space it takes.
 
@@ -46,6 +46,20 @@ defined by vectors, so using C++ semantics it could be represented just like thi
 ```
 
 ### Creating PQ Codebook
+The M and kBits are part of the PQ definition, but the centroids that are stored in the codebook
+must be trained. If you need 256 centroids you need to have at least 256 vectors, which makes the
+training trivial and useless but that is the bare minimum. FAISS proposes having 32 vectors per
+centroid minimum and 256 maximum, meaning if you pick less then 32 you would get a warning and
+picking more then 256 per centroid would just cut of the rest of the vectors.
+
+Centroids are trained using [k-means](https://en.wikipedia.org/wiki/K-means_clustering) clustering
+algorithm, which partitions the given vectors into k clusters by minimazing the total Euclidian
+squared distance between the vectors and the centroid closest to them.
+
+## How do use PQ quantization?
+So now that we have trained the PQ codebook and have all the information, how do we actually use the
+codebook to convert the incoming vectors to the PQ form.
 
 ## References
  - [Product Quantization for Nearest Neighbor Search](https://inria.hal.science/inria-00514462v2/document)
+ - [FAISS](https://github.com/facebookresearch/faiss/wiki)
