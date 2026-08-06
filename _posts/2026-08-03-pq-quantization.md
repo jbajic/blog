@@ -11,22 +11,23 @@ Let's define PQ as $\text{PQ}\lbrace M \times kBits \rbrace$, where $M$ is the n
 split the original vector into, and $kBits$ is the number of bits we want to use to represent the
 centroids in a given subspace, calculated as $2^{kBits}$.
 If we were to use $\text{PQ16x8}$, where $M = 16$ and $kBits = 8$, on vectors of dimension
-$D = 128$, we would split it into $M = 16$ subspaces, each of dimension $k_{sub} = D / M = 8$. Every
+$D = 128$, we would split it into $M = 16$ subspaces, each of dimension $kSub = D / M = 8$. Every
 subspace has $2^{kBits} = 2^8 = 256$ centroids, and each centroid is represented by a
-$k_{sub}$-dimensional vector of type `float32`.
+$kSub$-dimensional vector of type `float32`.
 
 ## PQ Codebook
+
 All of that information about centroids from every subspace is stored in the PQ codebook, and using
 that information we can visualize what the codebook looks like and calculate how much space it takes.
 
-So for $\text{PQ16x8}$ and vectors of dimension $D = 128$, we have $k_{sub} = D / M = 8$. So the
+So for $\text{PQ16x8}$ and vectors of dimension $D = 128$, we have $kSub = D / M = 8$. So the
 format of the codebook is that for every subspace (there are $M$ subspaces) we have $2^{kBits}$
-centroids, each a $k_{sub}$-dimensional vector. The total size is then:
+centroids, each a $kSub$-dimensional vector. The total size is then:
 
 $$
 \begin{aligned}
 \text{codebook bytes}
-  &= M \cdot 2^{kBits} \cdot k_{sub} \cdot \operatorname{sizeof}(\text{float32}) \\
+  &= M \cdot 2^{kBits} \cdot kSub \cdot \operatorname{sizeof}(\text{float32}) \\
   &= M \cdot 2^{kBits} \cdot \frac{D}{M} \cdot \operatorname{sizeof}(\text{float32}) \\
   &= 2^{kBits} \cdot D \cdot \operatorname{sizeof}(\text{float32}) \\
   &= 2^{8} \cdot 128 \cdot 4 \\
@@ -48,6 +49,7 @@ defined by vectors, so using C++ semantics it could be represented just like thi
 ```
 
 ## Creating PQ Codebook
+
 The $M$ and $kBits$ are part of the PQ definition, but the centroids that are stored in the
 codebook must be trained. If you need 256 centroids you need to have at least 256 vectors, which
 makes the training trivial and useless but that is the bare minimum. FAISS proposes having 32 vectors
@@ -59,6 +61,7 @@ clustering algorithm, which partitions the given vectors into $k$ clusters by mi
 squared Euclidean distance between the vectors and the centroid closest to them.
 
 ## Using PQ Codebook
+
 So now that we have trained the PQ codebook and have all the information, how do we actually use the
 codebook to convert the incoming vectors to the PQ form.
 
@@ -75,5 +78,6 @@ Therefore the reduction in size is from $128 \cdot \operatorname{sizeof}(\text{f
 to $16 \cdot 1 = 16\ \text{B}$, which is exactly 32 times less.
 
 ## References
+
  - [Product Quantization for Nearest Neighbor Search](https://inria.hal.science/inria-00514462v2/document)
  - [FAISS](https://github.com/facebookresearch/faiss/wiki)
