@@ -4,8 +4,6 @@ title: Product Quantization
 categories: [vector, ann, quantization, storage]
 ---
 
-## PQ quantization
-
 Quantization is a lossy compression done on vectors. And PQ (Product Quantization) is a type of
 compression that reduces the dimension of a vector, which effectively loses information.
 
@@ -45,7 +43,7 @@ defined by vectors, so using C++ semantics it could be represented just like thi
 }
 ```
 
-### Creating PQ Codebook
+## Creating PQ Codebook
 The M and kBits are part of the PQ definition, but the centroids that are stored in the codebook
 must be trained. If you need 256 centroids you need to have at least 256 vectors, which makes the
 training trivial and useless but that is the bare minimum. FAISS proposes having 32 vectors per
@@ -56,7 +54,7 @@ Centroids are trained using [k-means](https://en.wikipedia.org/wiki/K-means_clus
 algorithm, which partitions the given vectors into k clusters by minimazing the total Euclidian
 squared distance between the vectors and the centroid closest to them.
 
-## How do use PQ quantization?
+## Using PQ Codebook
 So now that we have trained the PQ codebook and have all the information, how do we actually use the
 codebook to convert the incoming vectors to the PQ form.
 
