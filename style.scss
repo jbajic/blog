@@ -267,10 +267,10 @@ blockquote {
   }
 }
 
-/* Gruvbox Theme Styles */
+/* Code block / inline code colors (light theme, pairs with GitHub-style syntax highlighting) */
 :root {
-  --gruvbox-bg: #282828;
-  --gruvbox-fg: #ebdbb2;
+  --gruvbox-bg: #f6f8fa;
+  --gruvbox-fg: #24292e;
   --gruvbox-red: #cc241d;
   --gruvbox-green: #98971a;
   --gruvbox-yellow: #d79921;
