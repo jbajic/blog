@@ -53,3 +53,19 @@
 /*pre code .operator {*/
   /*color: var(--gruvbox-red);*/
 /*}*/
+
+/* Dark/light theme toggle icon (darkmode-js button).
+   Emoji renders as a black glyph on some platforms, so we draw a monochrome
+   dingbat and control its color: a moon in light mode (click -> dark), a sun
+   in dark mode (click -> light). */
+.darkmode-toggle::after {
+  content: "\25CF"; /* ● full moon */
+  color: #ffe08a;
+  font-size: 1.6em;
+  line-height: 1;
+}
+
+.darkmode--activated .darkmode-toggle::after {
+  content: "\2600"; /* ☀ sun */
+  color: #f5a623;
+}
