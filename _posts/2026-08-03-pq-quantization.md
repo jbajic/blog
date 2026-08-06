@@ -60,7 +60,7 @@ Centroids are trained using the [k-means](https://en.wikipedia.org/wiki/K-means_
 clustering algorithm, which partitions the given vectors into $k$ clusters by minimizing the total
 squared Euclidean distance between the vectors and the centroid closest to them.
 
-## Using PQ Codebook
+## Converting vector to PQ form
 
 So now that we have trained the PQ codebook and have all the information, how do we actually use the
 codebook to convert the incoming vectors to the PQ form.
@@ -71,11 +71,22 @@ split into $M$ subspaces, we compare every $M$-th part of the vector against 256
 the closest one, and just remember the index of the closest centroid. So the transformation is
 effectively like this:
 
-$$[i_0, \dots, i_{128}] \longrightarrow [j_0, \dots, j_{16}]$$
+$$[i_1, \dots, i_{128}] \longrightarrow [j_1, \dots, j_{16}]$$
 
 where every $i_n$ is a `float32` which of size 4B and every $j_n$ is a number of size $kBits$ of size 1B.
 Therefore the reduction in size is from $128 \cdot \operatorname{sizeof}(\text{float32}) = 512\ \text{B}$
 to $16 \cdot 1 = 16\ \text{B}$, which is exactly 32 times less.
+
+## Calculating distance in PQ form
+
+To calculate the distance between two vectors in PQ form we sum the distance between the centroids of
+the vectors. So for two vectors v1 and v2, both in PQ form, the calculation of distance between them
+is called symetrical distance and looks like this:
+
+$$d(x, y)^2 = (x_{c1} - y_{c1})^2 + \dots + (x_{c16} - y_{c16})^2$$
+
+But interestingly you can calculate the distance between normal vector and the PQ one as well,
+so there is no need to convert the vector into PQ.
 
 ## References
 
