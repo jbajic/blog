@@ -30,7 +30,7 @@ $$
   &= M \cdot 2^{kBits} \cdot \frac{D}{M} \cdot \operatorname{sizeof}(\text{float32}) \\
   &= 2^{kBits} \cdot D \cdot \operatorname{sizeof}(\text{float32}) \\
   &= 2^{8} \cdot 128 \cdot 4 \\
-  &= 131072\ \text{B} = 128\ \text{KB}
+  &= 131072\ \text{B} = 128\ \text{KiB}
 \end{aligned}
 $$
 
@@ -57,7 +57,8 @@ picking more than 256 per centroid would just cut off the rest of the vectors.
 
 Centroids are trained using the [k-means](https://en.wikipedia.org/wiki/K-means_clustering)
 clustering algorithm, which partitions the given vectors into $k$ clusters by minimizing the total
-squared Euclidean distance between the vectors and the centroid closest to them.
+squared Euclidean distance between the vectors and the centroid closest to them. K-means is ran for
+every subspace independently, meaning it is ran $M$ times.
 
 ## Converting vector to PQ form
 
