@@ -60,6 +60,16 @@ squared distance between the vectors and the centroid closest to them.
 So now that we have trained the PQ codebook and have all the information, how do we actually use the
 codebook to convert the incoming vectors to the PQ form.
 
+For the same setup as above we do the following, for every subspace M we calculate the closest
+centroid in that subspace for a given vector. So in our case of 128 dimensional vector split into M
+subspaces we compare every M-th part of vector against 256 centroids and pick the closes one, and
+just remember the index of the closest centroid so the transformation is effectively like this:
+
+`[i_0, ..., i_128]` where every i_n is `float32` is converted to this:
+`[j_0, ..., j_16]` where every j_n is a number of size `kBits`, in this the size is 1B
+Therefore the reduction in size is from `128 * size_of(float32) = 512 B` to `16 * 1 = 16 B` which is
+exactly 32 times less.
+
 ## References
  - [Product Quantization for Nearest Neighbor Search](https://inria.hal.science/inria-00514462v2/document)
  - [FAISS](https://github.com/facebookresearch/faiss/wiki)
