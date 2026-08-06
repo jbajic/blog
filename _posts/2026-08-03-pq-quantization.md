@@ -5,11 +5,10 @@ categories: [vector, ann, quantization, storage]
 ---
 
 Quantization is a lossy compression done on vectors. And PQ (Product Quantization) is a type of
-compression that reduces the dimension of a vector, which effectively loses information.
+compression that reduces the vector into a multiple subspaces represented by centroids, which effectively loses information.
 
 Let's define PQ as $\text{PQ}\lbrace M \times kBits \rbrace$, where $M$ is the number of subspaces we want to
-split the original vector into, and $kBits$ is the number of bits we want to use to represent the
-centroids in a given subspace, calculated as $2^{kBits}$.
+split the original vector into, and $kBits$ defines the number of centroids in each subspace calculated as $2^{kBits}$.
 If we were to use $\text{PQ16x8}$, where $M = 16$ and $kBits = 8$, on vectors of dimension
 $D = 128$, we would split it into $M = 16$ subspaces, each of dimension $kSub = D / M = 8$. Every
 subspace has $2^{kBits} = 2^8 = 256$ centroids, and each centroid is represented by a
@@ -52,7 +51,7 @@ defined by vectors, so using C++ semantics it could be represented just like thi
 
 The $M$ and $kBits$ are part of the PQ definition, but the centroids that are stored in the
 codebook must be trained. If you need 256 centroids you need to have at least 256 vectors, which
-makes the training trivial and useless but that is the bare minimum. FAISS proposes having 32 vectors
+makes the training trivial and useless but that is the bare minimum. FAISS proposes having 39 vectors
 per centroid minimum and 256 maximum, meaning if you pick less than 32 you would get a warning and
 picking more than 256 per centroid would just cut off the rest of the vectors.
 
@@ -83,10 +82,11 @@ To calculate the distance between two vectors in PQ form we sum the distance bet
 the vectors. So for two vectors v1 and v2, both in PQ form, the calculation of distance between them
 is called symmetrical distance and looks like this:
 
-$$d(x, y)^2 = (x_{c1} - y_{c1})^2 + \dots + (x_{c16} - y_{c16})^2$$
+$$d(x, y)^2 = ||x_{c1} - y_{c1}||^2 + \dots + ||x_{c16} - y_{c16}||^2$$
 
 But interestingly you can calculate the asymmetric distance between normal vector and the PQ one as well,
-so there is no need to convert the vector into PQ.
+so there is no need to convert the vector into PQ, and asymmetric calculation is more precise and
+it is more favorable to use, especially during the search.
 
 ## References
 
