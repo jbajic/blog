@@ -81,11 +81,11 @@ to $16 \cdot 1 = 16\ \text{B}$, which is exactly 32 times less.
 
 To calculate the distance between two vectors in PQ form we sum the distance between the centroids of
 the vectors. So for two vectors v1 and v2, both in PQ form, the calculation of distance between them
-is called symetrical distance and looks like this:
+is called symmetrical distance and looks like this:
 
 $$d(x, y)^2 = (x_{c1} - y_{c1})^2 + \dots + (x_{c16} - y_{c16})^2$$
 
-But interestingly you can calculate the distance between normal vector and the PQ one as well,
+But interestingly you can calculate the asymmetric distance between normal vector and the PQ one as well,
 so there is no need to convert the vector into PQ.
 
 ## References
