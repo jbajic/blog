@@ -25,7 +25,7 @@ centroids, each a $k_{sub}$-dimensional vector. The total size is then:
 
 $$
 \begin{aligned}
-\text{codebook}_\text{bytes}
+\text{codebook bytes}
   &= M \cdot 2^{k_{bits}} \cdot k_{sub} \cdot \operatorname{sizeof}(\text{float32}) \\
   &= M \cdot 2^{k_{bits}} \cdot \frac{D}{M} \cdot \operatorname{sizeof}(\text{float32}) \\
   &= 2^{k_{bits}} \cdot D \cdot \operatorname{sizeof}(\text{float32}) \\
@@ -39,7 +39,7 @@ dimension.
 
 And from this we can derive what the codebook looks like: for every subspace it has 256 centroids
 defined by vectors, so using C++ semantics it could be represented just like this:
-```cpp
+```
 {
     subspace_1:  { centroid_1, ..., centroid_256 },
     ...
@@ -70,7 +70,7 @@ effectively like this:
 
 $$[i_0, \dots, i_{128}] \longrightarrow [j_0, \dots, j_{16}]$$
 
-where every $i_n$ is a `float32` and every $j_n$ is a number of size $k_{bits}$, in this case 1 B.
+where every $i_n$ is a `float32` which of size 4B and every $j_n$ is a number of size $k_{bits}$ of size 1B.
 Therefore the reduction in size is from $128 \cdot \operatorname{sizeof}(\text{float32}) = 512\ \text{B}$
 to $16 \cdot 1 = 16\ \text{B}$, which is exactly 32 times less.
 
