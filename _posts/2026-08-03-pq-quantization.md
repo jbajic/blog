@@ -7,12 +7,12 @@ categories: [vector, ann, quantization, storage]
 Quantization is a lossy compression done on vectors. And PQ (Product Quantization) is a type of
 compression that reduces the dimension of a vector, which effectively loses information.
 
-Let's define PQ as $\text{PQ}\lbrace M \times k_{bits} \rbrace$, where $M$ is the number of subspaces we want to
-split the original vector into, and $k_{bits}$ is the number of bits we want to use to represent the
-centroids in a given subspace, calculated as $2^{k_{bits}}$.
-If we were to use $\text{PQ16x8}$, where $M = 16$ and $k_{bits} = 8$, on vectors of dimension
+Let's define PQ as $\text{PQ}\lbrace M \times kBits \rbrace$, where $M$ is the number of subspaces we want to
+split the original vector into, and $kBits$ is the number of bits we want to use to represent the
+centroids in a given subspace, calculated as $2^{kBits}$.
+If we were to use $\text{PQ16x8}$, where $M = 16$ and $kBits = 8$, on vectors of dimension
 $D = 128$, we would split it into $M = 16$ subspaces, each of dimension $k_{sub} = D / M = 8$. Every
-subspace has $2^{k_{bits}} = 2^8 = 256$ centroids, and each centroid is represented by a
+subspace has $2^{kBits} = 2^8 = 256$ centroids, and each centroid is represented by a
 $k_{sub}$-dimensional vector of type `float32`.
 
 ## PQ Codebook
@@ -20,15 +20,15 @@ All of that information about centroids from every subspace is stored in the PQ 
 that information we can visualize what the codebook looks like and calculate how much space it takes.
 
 So for $\text{PQ16x8}$ and vectors of dimension $D = 128$, we have $k_{sub} = D / M = 8$. So the
-format of the codebook is that for every subspace (there are $M$ subspaces) we have $2^{k_{bits}}$
+format of the codebook is that for every subspace (there are $M$ subspaces) we have $2^{kBits}$
 centroids, each a $k_{sub}$-dimensional vector. The total size is then:
 
 $$
 \begin{aligned}
 \text{codebook bytes}
-  &= M \cdot 2^{k_{bits}} \cdot k_{sub} \cdot \operatorname{sizeof}(\text{float32}) \\
-  &= M \cdot 2^{k_{bits}} \cdot \frac{D}{M} \cdot \operatorname{sizeof}(\text{float32}) \\
-  &= 2^{k_{bits}} \cdot D \cdot \operatorname{sizeof}(\text{float32}) \\
+  &= M \cdot 2^{kBits} \cdot k_{sub} \cdot \operatorname{sizeof}(\text{float32}) \\
+  &= M \cdot 2^{kBits} \cdot \frac{D}{M} \cdot \operatorname{sizeof}(\text{float32}) \\
+  &= 2^{kBits} \cdot D \cdot \operatorname{sizeof}(\text{float32}) \\
   &= 2^{8} \cdot 128 \cdot 4 \\
   &= 131072\ \text{B} = 128\ \text{KB}
 \end{aligned}
@@ -48,7 +48,7 @@ defined by vectors, so using C++ semantics it could be represented just like thi
 ```
 
 ## Creating PQ Codebook
-The $M$ and $k_{bits}$ are part of the PQ definition, but the centroids that are stored in the
+The $M$ and $kBits$ are part of the PQ definition, but the centroids that are stored in the
 codebook must be trained. If you need 256 centroids you need to have at least 256 vectors, which
 makes the training trivial and useless but that is the bare minimum. FAISS proposes having 32 vectors
 per centroid minimum and 256 maximum, meaning if you pick less than 32 you would get a warning and
@@ -70,7 +70,7 @@ effectively like this:
 
 $$[i_0, \dots, i_{128}] \longrightarrow [j_0, \dots, j_{16}]$$
 
-where every $i_n$ is a `float32` which of size 4B and every $j_n$ is a number of size $k_{bits}$ of size 1B.
+where every $i_n$ is a `float32` which of size 4B and every $j_n$ is a number of size $kBits$ of size 1B.
 Therefore the reduction in size is from $128 \cdot \operatorname{sizeof}(\text{float32}) = 512\ \text{B}$
 to $16 \cdot 1 = 16\ \text{B}$, which is exactly 32 times less.
 
