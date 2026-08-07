@@ -95,7 +95,7 @@ y_{ci8})^2$, which still does not reduce the amount of calculation that is neede
 
 But that would be naive approach, since we already know the centroids in advance and we can use that
 to build the distance matrix between centroids in advance to reduce the computation needed, that matrix
-is SDC(symmetrical distance) table, $M \times 2^{kBits} \times 2^{kBits}$. For every subspace we calculate the
+is SDC(symmetrical distance) table, $M \cdot 2^{kBits} \cdot 2^{kBits}$. For every subspace we calculate the
 distance between each centroid, which looks like this:
 ```
 {
@@ -115,7 +115,7 @@ distance between each centroid, which looks like this:
 
 where every $distance(centroid_n, centroid_m)$ is
 $d(c_n, c_m)^2 = (c_{n1} - c_{m1})^2 + \dots + (c_{n8} - c_{m8})^2 = ||c_n - c_m||^2$.
-This is $16 \times 256 \times 256$ entries of distances which is 4MiB in this case. Now the computation of
+This is $16 \dots 256 \cdot 256$ entries of distances which is 4MiB in this case. Now the computation of
 distances can be simplified to just summing of 16 distances:
 
 $$d(x,y)^2 = \sum_{n=1}^{16} SDC[n][cx_n][cy_n]$$
@@ -124,7 +124,7 @@ where $cx_n$ and $cy_n$ are respective centroid ids from $x$ and $y$ vectors.
 
 But if one vector $x$ is in PQ form and $y$ in full form we calculate asymmetric distance, we just
 split the $y$ into $M$ subvectors and build the ADC(asymmetric distance) table for the $y$. In this
-case the ADC table consists of only $M \times 2^{kBits}$ entries since we calculate only the
+case the ADC table consists of only $M \cdot 2^{kBits}$ entries since we calculate only the
 distances between the each of the vectors subvectors against the centroids, so the table looks like
 this:
 ```
@@ -135,7 +135,7 @@ this:
 }
 ```
 
-which is a much smaller matrix basically containing $16 \times 256 \times 4 = 16384 B = 16KiB$. This again reduces
+which is a much smaller matrix basically containing $16 \cdot 256 \cdot 4 = 16384 B = 16KiB$. This again reduces
 the calculation to just summing of 16 distances.
 
 $$d(x, y)^2 = \sum_{n=1}^{16} ADC[n][cx_n]$$
@@ -143,6 +143,16 @@ $$d(x, y)^2 = \sum_{n=1}^{16} ADC[n][cx_n]$$
 We see that the ADC table is much smaller but it is reconstructed per query vector, while SDC is true
 for the whole dataset. Also in ADC only one vector is quantized which makes the distance error computation
 between vectors smaller.
+
+## Conclusion
+
+So for a PQ16x8 and vectors dimension $D = 128$ we have the following structures that we will probably need:
+- PQ codebook: $2^{kBits} \cdot D \cdot \operatorname{sizeof}(\text{float32}) = 128 KiB$
+- SDC table: $M \cdot 2^{kBits} \cdot 2^{kBits} \cdot \operatorname{sizeof}(\text{float32})= 4MiB $
+- ADC table: $M \cdot 2^{kBits} \cdot \operatorname{sizeof}(\text{float32}) = 16 KiB$
+
+and for that we reduce the size of each vectors from $D \cdot \operatorname{sizeof}(\text{float32}) = 512 B$ to $M \cdot
+\frac{kBits}{8} = 16 B$.
 
 ## References
 
