@@ -34,7 +34,7 @@ $$
 \end{aligned}
 $$
 
-The whole codebook takes only 128 KB, and it depends only on the number of centroids and the vector
+The whole codebook takes only 128 KiB, and it depends only on the number of centroids and the vector
 dimension.
 
 And from this we can derive what the codebook looks like: for every subspace it has 256 centroids
@@ -51,14 +51,14 @@ defined by vectors, so using C++ semantics it could be represented just like thi
 
 The $M$ and $kBits$ are part of the PQ definition, but the centroids that are stored in the
 codebook must be trained. If you need 256 centroids you need to have at least 256 vectors, which
-makes the training trivial and useless but that is the bare minimum. FAISS proposes having 39 vectors
-per centroid minimum and 256 maximum, meaning if you pick less than 32 you would get a warning and
+makes the training trivial and useless but that is the bare minimum. FAISS proposes having minimum of 39 training vectors
+per centroid and 256 maximum, meaning if you pick less than 39 you would get a warning and
 picking more than 256 per centroid would just cut off the rest of the vectors.
 
 Centroids are trained using the [k-means](https://en.wikipedia.org/wiki/K-means_clustering)
 clustering algorithm, which partitions the given vectors into $k$ clusters by minimizing the total
-squared Euclidean distance between the vectors and the centroid closest to them. K-means is ran for
-every subspace independently, meaning it is ran $M$ times.
+squared Euclidean distance between the vectors and the centroid closest to them. K-means is run for
+every subspace independently, meaning it is run $M$ times.
 
 ## Converting vector to PQ form
 
@@ -67,27 +67,82 @@ codebook to convert the incoming vectors to the PQ form.
 
 For the same setup as above we do the following: for each of the $M$ subspaces we calculate the
 closest centroid in that subspace for a given vector. So in our case of a 128-dimensional vector
-split into $M$ subspaces, we compare every $M$-th part of the vector against 256 centroids and pick
-the closest one, and just remember the index of the closest centroid. So the transformation is
+split into $M$ subspaces, and for each $M$ subspace of the vector compare against 256 centroids
+and pick the closest one, and just remember the index of the chosen centroid. So the transformation is
 effectively like this:
 
 $$[i_1, \dots, i_{128}] \longrightarrow [j_1, \dots, j_{16}]$$
 
-where every $i_n$ is a `float32` which of size 4B and every $j_n$ is a number of size $kBits$ of size 1B.
+where every $i_n$ is a `float32` of size 4B and every $j_n$ is a number of size $kBits$ which in the case above is 1B.
 Therefore the reduction in size is from $128 \cdot \operatorname{sizeof}(\text{float32}) = 512\ \text{B}$
 to $16 \cdot 1 = 16\ \text{B}$, which is exactly 32 times less.
 
 ## Calculating distance in PQ form
 
-To calculate the distance between two vectors in PQ form we sum the distance between the centroids of
-the vectors. So for two vectors v1 and v2, both in PQ form, the calculation of distance between them
-is called symmetrical distance and looks like this:
+To calculate the distance between two vectors in full form we need to sum their squared differences
+across all dimensions. For vectors x,y dimension 128 the calculation looks like this:
+
+$$d(x, y)^2 = (x_1 - y_1)^2 + \dots + (x_{128} - y_{128})^2$$
+
+But when they are both in PQ form we sum the distance between the centroids of the vectors. So for
+two vectors both in PQ form, the calculation of distance between them is called symmetrical distance
+and it is calculated as a sum of distances between their respective centroids which are also vectors:
 
 $$d(x, y)^2 = ||x_{c1} - y_{c1}||^2 + \dots + ||x_{c16} - y_{c16}||^2$$
 
-But interestingly you can calculate the asymmetric distance between normal vector and the PQ one as well,
-so there is no need to convert the vector into PQ, and asymmetric calculation is more precise and
-it is more favorable to use, especially during the search.
+where every $||x_{ci} - y_{ci}||^2$ is still $(x_{ci1} - y_{ci1})^2 + \dots + (x_{ci8} -
+y_{ci8})^2$, which still does not reduce the amount of calculation that is needed.
+
+But that would be naive approach, since we already know the centroids in advance and we can use that
+to build the distance matrix between centroids in advance to reduce the computation needed, that matrix
+is SDC(symmetrical distance) table, $M \times 2^{kBits} \times 2^{kBits}$. For every subspace we calculate the
+distance between each centroid, which looks like this:
+```
+{
+  subspace_1: {
+    centroid_1: [distance(centroid_1, centroid_1), ..., distance(centroid_1, centroid_256)],
+    ...
+    centroid_256: [distance(centroid_256, centroid_1), ..., distance(centroid_256, centroid_256)]
+  },
+  ...
+  subspace_16: {
+    centroid_1: [distance(centroid_1, centroid_1), ..., distance(centroid_1, centroid_256)],
+    ...
+    centroid_256: [distance(centroid_256, centroid_1), ..., distance(centroid_256, centroid_256)]
+  }
+}
+```
+
+where every $distance(centroid_n, centroid_m)$ is
+$d(c_n, c_m)^2 = (c_{n1} - c_{m1})^2 + \dots + (c_{n8} - c_{m8})^2 = ||c_n - c_m||^2$.
+This is $16 \times 256 \times 256$ entries of distances which is 4MiB in this case. Now the computation of
+distances can be simplified to just summing of 16 distances:
+
+$$d(x,y)^2 = \sum_{n=1}^{16} SDC[n][cx_n][cy_n]$$
+
+where $cx_n$ and $cy_n$ are respective centroid ids from $x$ and $y$ vectors.
+
+But if one vector $x$ is in PQ form and $y$ in full form we calculate asymmetric distance, we just
+split the $y$ into $M$ subvectors and build the ADC(asymmetric distance) table for the $y$. In this
+case the ADC table consists of only $M \times 2^{kBits}$ entries since we calculate only the
+distances between the each of the vectors subvectors against the centroids, so the table looks like
+this:
+```
+{
+  subspace_1: [distance(y_1, centroid_1), ..., distance(y_1, centroid_256)],
+  ...
+  subspace_16: [distance(y_16, centroid_1), ..., distance(y_16, centroid_256)]
+}
+```
+
+which is a much smaller matrix basically containing $16 \times 256 \times 4 = 16384 B = 16KiB$. This again reduces
+the calculation to just summing of 16 distances.
+
+$$d(x, y)^2 = \sum_{n=1}^{16} ADC[n][cx_n]$$
+
+We see that the ADC table is much smaller but it is reconstructed per query vector, while SDC is true
+for the whole dataset. Also in ADC only one vector is quantized which makes the distance error computation
+between vectors smaller.
 
 ## References
 
