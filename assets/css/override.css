@@ -69,3 +69,13 @@
   content: "\2600"; /* ☀ sun */
   color: #f5a623;
 }
+
+/* KaTeX math in dark mode.
+   darkmode-js inverts the page with a `mix-blend-mode: difference` overlay.
+   KaTeX's thin glyphs invert to a dim gray that washes out on black, so we
+   opt the math out of the blend with `isolation: isolate` (the same trick the
+   library uses for images) and give it an explicit light color instead. */
+.darkmode--activated .katex {
+  isolation: isolate;
+  color: #eaeaea;
+}
