@@ -1,6 +1,7 @@
 ---
 ---
 
+@import "theme";
 @import "variables";
 
 html {
@@ -8,7 +9,7 @@ html {
 }
 
 body {
-  background: $white;
+  background: var(--bg);
   font-family: $sans-font-family;
   font-weight: 400;
   font-size: 18px;
@@ -161,7 +162,7 @@ hr {
     text-align: center;
     border: 01px solid $paleGray;
     border-radius: 03px;
-    background: #ffffff;
+    background: var(--bg);
     font-weight: 400;
     color: $gray;
     font-size: 16px !important;
@@ -242,18 +243,18 @@ hr {
 }
 
 ::-moz-selection {
-  color: $white;
-  background: $blue;
+  color: var(--selection-fg);
+  background: var(--selection-bg);
 }
 ::selection {
-  color: $white;
-  background: $blue;
+  color: var(--selection-fg);
+  background: var(--selection-bg);
 }
 
 blockquote {
-  background-color: $white;
+  background-color: var(--bg);
   color: $gray;
-  border-left: 04px solid #eeeeee;
+  border-left: 04px solid var(--border);
   padding-left: 15px;
   font-size: 16px !important;
   font-style: italic;
@@ -267,27 +268,14 @@ blockquote {
   }
 }
 
-/* Code block / inline code colors (light theme, pairs with GitHub-style syntax highlighting) */
-:root {
-  --gruvbox-bg: #f6f8fa;
-  --gruvbox-fg: #24292e;
-  --gruvbox-red: #cc241d;
-  --gruvbox-green: #98971a;
-  --gruvbox-yellow: #d79921;
-  --gruvbox-blue: #458588;
-  --gruvbox-purple: #b16286;
-  --gruvbox-aqua: #689d6a;
-  --gruvbox-gray: #a89984;
-}
-
 pre,
 code {
   font-family: $code-font-family !important;
   font-size: 15px !important;
-  color: var(--gruvbox-fg);
-  border: 01px solid #dddddd;
+  color: var(--code-fg);
+  border: 01px solid var(--border);
   border-radius: 03px;
-  background-color: var(--gruvbox-bg);
+  background-color: var(--code-bg);
 }
 
 code {
@@ -308,11 +296,11 @@ pre {
 .highlight {
   isolation: isolate;
   border-radius: 03px;
-  background:  var(--gruvbox-bg);
+  background:  var(--code-bg);
   @extend %vertical-rhythm;
 
   .highlighter-rouge & {
-    background: var(--gruvbox-bg); 
+    background: var(--code-bg);
   }
 }
 
@@ -362,7 +350,7 @@ table {
   width: 100%;
   border-collapse: collapse;
   overflow-x: auto;
-  border: 01px solid #dddddd;
+  border: 01px solid var(--border);
 
   & + table {
     margin-top: 30px;
@@ -370,7 +358,7 @@ table {
 
   tr {
     &:nth-child(even) {
-      background-color: #efefef;
+      background-color: var(--bg-elevated);
     }
   }
 
@@ -379,12 +367,12 @@ table {
   }
 
   th {
-    background-color: #efefef;
-    border: 01px solid #dddddd;
+    background-color: var(--bg-elevated);
+    border: 01px solid var(--border);
   }
 
   td {
-    border: 01px solid #dddddd;
+    border: 01px solid var(--border);
   }
 
   tr,
@@ -597,9 +585,9 @@ a.nav-menu-item:focus {
 
 .wrapper-footer {
   margin-top: 30px;
-  border-top: 01px solid #ddd;
-  border-bottom: 01px solid #ddd;
-  background-color: $lightGray;
+  border-top: 01px solid var(--border);
+  border-bottom: 01px solid var(--border);
+  background-color: var(--bg-elevated);
 }
 
 footer {

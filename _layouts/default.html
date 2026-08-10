@@ -1,6 +1,18 @@
 <!doctype html>
 <html lang="{{ site.lang | default: "en" }}">
   <head>
+    <script>
+      // Resolve the active theme before first paint (no flash): a saved choice
+      // wins, otherwise follow the OS preference. Stamped on <html> so all the
+      // CSS `:root[data-theme="dark"]` tokens apply immediately.
+      (function () {
+        try {
+          var saved = localStorage.getItem('theme');
+          var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script>
     {% include meta.html %}
 
     {% seo title=false %}
@@ -118,27 +130,22 @@
                     ]});">
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode"></button>
     <script>
-      function addDarkmodeWidget() {
-        new Darkmode().showWidget();
-        window.addEventListener('load', addDarkmodeWidget);
-      }
-      const options = {
-        bottom: '20px', // default: '32px'
-        right: '20px', // default: '32px'
-        left: 'unset', // default: 'unset'
-        time: '0.5s', // default: '0.3s'
-        mixColor: '#fff', // default: '#fff'
-        backgroundColor: '#fff',  // default: '#fff'
-        buttonColorDark: '#100f2c',  // default: '#100f2c'
-        buttonColorLight: '#fff', // default: '#fff'
-        saveInCookies: true, // remember the user's manual toggle across reloads
-        label: '', // icon is drawn via CSS (::after) in override.css
-        autoMatchOsTheme: true // default: true
-      }     
-    const darkmode = new Darkmode(options);
-      darkmode.showWidget();
+      (function () {
+        var root = document.documentElement;
+        var btn = document.getElementById('theme-toggle');
+        btn.addEventListener('click', function () {
+          var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+          root.setAttribute('data-theme', next);
+          try { localStorage.setItem('theme', next); } catch (e) {}
+        });
+        // Follow OS changes until the user makes an explicit choice.
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+          try { if (localStorage.getItem('theme')) return; } catch (err) {}
+          root.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        });
+      })();
     </script>
 
   </body>

@@ -1,0 +1,48 @@
+@charset "utf-8";
+
+//
+// THEME TOKENS
+//
+// All theme-able colors are exposed as CSS custom properties so the palette can
+// switch at runtime. `:root` holds the light values; `:root[data-theme="dark"]`
+// overrides them for dark mode. An inline script in the <head> resolves the
+// active theme (saved choice -> OS preference -> light) and stamps `data-theme`
+// on <html> before first paint, so there is no flash and no color-inversion hack.
+//
+// The SCSS palette variables in _variables.scss point at these tokens, so the
+// existing `color: $darkGray` style usages theme automatically.
+
+:root {
+  --bg: #ffffff;          // page background
+  --bg-elevated: #eeeeee; // footer, table header/stripes
+  --fg: #333333;          // body text
+  --fg-strong: #222222;   // headings
+  --fg-muted: #666666;    // dates, captions, blockquotes, footer icons
+  --link: #4183c4;
+  --link-visited: #4141c4;
+  --accent: #bd2c00;      // read-more, hovers, active nav
+  --border: #dddddd;
+  --selection-bg: #4183c4;
+  --selection-fg: #ffffff;
+
+  // code block / inline code (light, pairs with the GitHub-style syntax theme)
+  --code-bg: #f6f8fa;
+  --code-fg: #24292e;
+}
+
+:root[data-theme="dark"] {
+  --bg: #181818;
+  --bg-elevated: #242424;
+  --fg: #e6e6e6;
+  --fg-strong: #f5f5f5;
+  --fg-muted: #a0a0a0;
+  --link: #6ab0f3;
+  --link-visited: #b3a4f0;
+  --accent: #ff7043;
+  --border: #3a3a3a;
+  --selection-bg: #6ab0f3;
+  --selection-fg: #101010;
+
+  --code-bg: #0d1117;
+  --code-fg: #c9d1d9;
+}

@@ -1,81 +1,39 @@
-/*:root {*/
-  /*--gruvbox-bg: #282828;*/
-  /*--gruvbox-fg: #ebdbb2;*/
-  /*--gruvbox-red: #cc241d;*/
-  /*--gruvbox-green: #98971a;*/
-  /*--gruvbox-yellow: #d79921;*/
-  /*--gruvbox-blue: #458588;*/
-  /*--gruvbox-purple: #b16286;*/
-  /*--gruvbox-aqua: #689d6a;*/
-  /*--gruvbox-gray: #a89984;*/
-/*}*/
+/* Floating theme toggle button.
+   The page theme is driven by `data-theme` on <html> (see _sass/_theme.scss and
+   the scripts in _layouts/default.html). The icon is a monochrome dingbat whose
+   color we control: a moon in light mode (click -> dark), a sun in dark mode
+   (click -> light). */
+.theme-toggle {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-elevated);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
 
-/*pre, code {*/
-  /*background-color: var(--gruvbox-bg);*/
-  /*color: var(--gruvbox-fg);*/
-  /*padding: 10px;*/
-  /*border-radius: 5px;*/
-  /*font-family: 'Courier New', monospace;*/
-/*}*/
+.theme-toggle:hover {
+  transform: scale(1.08);
+}
 
-/*[> Syntax Highlighting <]*/
-/*pre code {*/
-  /*display: block;*/
-  /*font-size: 14px;*/
-  /*overflow-x: auto;*/
-/*}*/
-
-/*[> Colors for syntax highlighting <]*/
-/*pre code span {*/
-  /*color: var(--gruvbox-fg);*/
-/*}*/
-
-/*pre code .comment {*/
-  /*color: var(--gruvbox-gray);*/
-/*}*/
-
-/*pre code .keyword {*/
-  /*color: var(--gruvbox-purple);*/
-/*}*/
-
-/*pre code .string {*/
-  /*color: var(--gruvbox-aqua);*/
-/*}*/
-
-/*pre code .number {*/
-  /*color: var(--gruvbox-yellow);*/
-/*}*/
-
-/*pre code .builtin {*/
-  /*color: var(--gruvbox-green);*/
-/*}*/
-
-/*pre code .operator {*/
-  /*color: var(--gruvbox-red);*/
-/*}*/
-
-/* Dark/light theme toggle icon (darkmode-js button).
-   Emoji renders as a black glyph on some platforms, so we draw a monochrome
-   dingbat and control its color: a moon in light mode (click -> dark), a sun
-   in dark mode (click -> light). */
-.darkmode-toggle::after {
-  content: "\25CF"; /* ● full moon */
+.theme-toggle::after {
+  content: "\25CF"; /* ● moon -> click for dark */
   color: #ffe08a;
-  font-size: 1.6em;
+  font-size: 1.5rem;
   line-height: 1;
 }
 
-.darkmode--activated .darkmode-toggle::after {
-  content: "\2600"; /* ☀ sun */
+:root[data-theme="dark"] .theme-toggle::after {
+  content: "\2600"; /* ☀ sun -> click for light */
   color: #f5a623;
-}
-
-/* KaTeX math in dark mode.
-   darkmode-js inverts the page with a `mix-blend-mode: difference` overlay.
-   KaTeX's thin glyphs invert to a dim gray that washes out on black, so we
-   opt the math out of the blend with `isolation: isolate` (the same trick the
-   library uses for images) and give it an explicit light color instead. */
-.darkmode--activated .katex {
-  isolation: isolate;
-  color: #eaeaea;
 }

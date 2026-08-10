@@ -5,16 +5,20 @@
 //
 
 // Colors
+// The palette variables point at the theme tokens defined in _theme.scss so the
+// existing `color: $darkGray` usages switch automatically between light and dark.
+// $white / $black stay literal — they are fixed contrast colors (e.g. selection
+// text, message text) that must not flip with the theme.
 $white: #FFFFFF;
 $black: #000000;
-$gray: #666666;
-$lightGray: #EEEEEE;
-$paleGray: #DDDDDD;
-$darkGray: #333333;
-$darkerGray: #222222;
-$blue: #4183C4;
-$purple: #4141C4;
-$mahogany: #BD2C00;
+$gray: var(--fg-muted);
+$lightGray: var(--border);
+$paleGray: var(--border);
+$darkGray: var(--fg);
+$darkerGray: var(--fg-strong);
+$blue: var(--link);
+$purple: var(--link-visited);
+$mahogany: var(--accent);
 
 // Pagination colors
 $pagination-color: $darkGray;
