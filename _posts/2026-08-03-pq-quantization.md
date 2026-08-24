@@ -4,8 +4,9 @@ title: Product Quantization
 categories: [vector, ann, quantization, storage]
 ---
 
-Quantization is a lossy compression done on vectors. And PQ (Product Quantization) is a type of
-compression that reduces the vector into a multiple subspaces represented by centroids, which effectively loses information.
+Quantization is a compression done on vectors. And PQ (Product Quantization) is a type of
+lossy compression that reduces the vector into a multiple subspaces represented by centroids,
+which effectively loses information.
 
 Let's define PQ as $\text{PQ}\lbrace M \times kBits \rbrace$, where $M$ is the number of subspaces we want to
 split the original vector into, and $kBits$ defines the number of centroids in each subspace calculated as $2^{kBits}$.
